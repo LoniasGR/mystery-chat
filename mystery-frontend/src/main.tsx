@@ -1,10 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import Root from "./Root.tsx";
 
-createRoot(document.getElementById('root')!).render(
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/700.css";
+import "@fontsource/barlow/400-italic.css";
+import "@fontsource/barlow/700-italic.css";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <Root />
+  </StrictMode>
+);
