@@ -13,7 +13,7 @@ function mockedFetchMessages() {
   return new Promise<Message[]>((resolve) => {
     setTimeout(() => {
       resolve(MOCKED_MESSAGES);
-    }, 1000);
+    }, 2000);
   });
 }
 

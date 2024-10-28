@@ -4,7 +4,7 @@ import Logo from "@/assets/app-logo.webp";
 
 function ChatHeader() {
   return (
-    <div className="flex p-4 gap-3 items-center bg-card">
+    <div className="flex p-4 gap-3 items-center bg-popover">
       <Avatar className="h-8 w-8 lg:h-10 lg:w-10">
         <AvatarImage src={Logo} />
       </Avatar>

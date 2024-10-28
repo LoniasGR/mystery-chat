@@ -27,7 +27,7 @@ function ChatTextArea() {
   };
 
   return (
-    <div className="flex flex-col w-full gap-1.5 p-4 bg-card">
+    <div className="flex flex-col w-full gap-1.5 p-4 bg-popover">
       <div className="relative">
         {/* TODO: instead of resizable textarea, make an auto resize (on enter) */}
         <Textarea
