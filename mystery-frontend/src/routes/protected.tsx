@@ -8,7 +8,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { isLoggedIn } = TODO_useAuth();
   if (!isLoggedIn) {
-    return <Navigate to={PATHS.LOGIN} />;
+    return <Navigate to={PATHS.LOGIN} replace />;
   }
   return children;
 };
@@ -19,3 +19,5 @@ function TODO_useAuth() {
 }
 
 export default ProtectedRoute;
+
+// todo: restrict access to /login for logged in people

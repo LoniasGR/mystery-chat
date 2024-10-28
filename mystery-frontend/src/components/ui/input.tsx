@@ -28,6 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             variant="ghost"
             className="absolute top-[50%] translate-y-[-50%] right-1 w-7 h-7"
             onClick={togglePasswordVisibility}
+            type="button"
           >
             {isPasswordVisible ? (
               <EyeClosedIcon className="h-4 w-4" />

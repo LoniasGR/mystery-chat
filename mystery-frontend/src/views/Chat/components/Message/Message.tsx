@@ -11,7 +11,7 @@ const Message: MessageComponent = ({ content, meta }) => {
 
   return (
     <div
-      className={`flex gap-3 max-w-[85%] sm:max-w-[min(80%, 550px)] ${
+      className={`flex gap-3 max-w-[85%] sm:max-w-[min(80%,550px)] ${
         isYou ? "self-end ml-8" : "self-start mr-8"
       }`}
     >
@@ -27,7 +27,7 @@ const Message: MessageComponent = ({ content, meta }) => {
 const MessageSkeleton = ({ isYou = false }) => {
   return (
     <div
-      className={`flex gap-3 max-w-[85%] sm:max-w-[min(80%, 550px)] ${
+      className={`flex gap-3 max-w-[85%] sm:max-w-[min(80%,550px)] ${
         isYou ? "self-end ml-8" : "self-start mr-8"
       }`}
     >
