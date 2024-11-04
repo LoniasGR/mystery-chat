@@ -6,8 +6,10 @@ const username = envOrDefault("MONGO_USERNAME");
 const password = envOrDefault("MONGO_PASSWORD");
 const port = envOrDefault("MONGO_PORT");
 const host = envOrDefault("MONGO_HOST");
+const dbName = envOrDefault("MONGO_DATABASE");
 const connectionString = `mongodb://${username}:${password}@${host}:${port}`;
 const client = new MongoClient(connectionString);
+const db = client.db(dbName as string);
 
 async function testConnection(client: MongoClient) {
   try {
@@ -22,4 +24,4 @@ async function testConnection(client: MongoClient) {
   }
 }
 
-export { client, testConnection };
+export { client, db, testConnection };
