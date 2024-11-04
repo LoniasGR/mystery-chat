@@ -9,7 +9,7 @@ router.post("/login", async (req, res) => {
   try {
     const jwt = await auth.login(body.username, body.password);
     res
-      .cookie("Mysterious-token", jwt, {
+      .cookie("mysterious-token", jwt, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
@@ -20,6 +20,10 @@ router.post("/login", async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e });
   }
+});
+
+router.post("/logout", async (req, res) => {
+  res.clearCookie("mysterious-token").status(200).send();
 });
 
 export default router;
