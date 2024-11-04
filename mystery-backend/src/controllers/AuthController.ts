@@ -3,11 +3,11 @@ import { AuthCredentials } from "../models/AuthCredentials";
 import { AuthService } from "../services/AuthService";
 const router = express.Router();
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const body = req.body as AuthCredentials;
   const auth = new AuthService();
   try {
-    const jwt = auth.login(body.username, body.password);
+    const jwt = await auth.login(body.username, body.password);
     res
       .cookie("Mysterious-token", jwt, {
         httpOnly: true,
@@ -19,8 +19,6 @@ router.post("/login", (req, res) => {
       .json({ username: body.username });
   } catch (e) {
     res.status(500).json({ error: e });
-  } finally {
-    res.send();
   }
 });
 
