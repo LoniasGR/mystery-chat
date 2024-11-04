@@ -22,7 +22,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "dark",
   storageKey = "mysterious-ui-theme",
   ...props
 }: ThemeProviderProps) {
@@ -45,7 +45,6 @@ export function ThemeProvider({
       return;
     }
 
-    console.log({ theme });
     root.classList.add(theme);
   }, [theme]);
 
