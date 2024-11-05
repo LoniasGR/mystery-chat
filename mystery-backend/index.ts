@@ -1,7 +1,8 @@
 import express from "express";
-import { client, db, testConnection, envOrDefault } from "./src/configs";
+import { client, testConnection, envOrDefault } from "./src/configs";
 import { authController, userController } from "./src/controllers";
-import { UsersRepository } from "./src/repositories/userRepository";
+import { users } from "./src/data/users.json";
+import { UserService } from "./src/services/UserService";
 
 const app = express();
 app.use(express.json());
@@ -14,8 +15,8 @@ try {
 }
 
 await client.connect();
-const userRepository = new UsersRepository(db);
-userRepository.insert();
+
+await UserService.createUsers(users);
 
 app.use("/users", userController);
 app.use("/auth", authController);

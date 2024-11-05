@@ -21,7 +21,7 @@ class UsersRepository implements RepositoryInterface<User, string> {
   }
 
   findById(id: string) {
-    return this.collection.findOne({ username: id });
+    return this.collection.findOne({ _id: id });
   }
 
   findAll(): Promise<User[]> {
@@ -29,11 +29,11 @@ class UsersRepository implements RepositoryInterface<User, string> {
   }
 
   delete(id: string) {
-    return this.collection.deleteOne({ username: id });
+    return this.collection.deleteOne({ _id: id });
   }
 
   update(id: string, item: User) {
-    return this.collection.replaceOne({ username: id }, item);
+    return this.collection.replaceOne({ _id: id }, item);
   }
 }
 export { UsersRepository };
