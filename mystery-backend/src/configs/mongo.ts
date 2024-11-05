@@ -24,4 +24,13 @@ async function testConnection(client: MongoClient) {
   }
 }
 
-export { client, db, testConnection };
+async function connectOrExit(client: MongoClient) {
+  try {
+    await testConnection(client);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+}
+
+export { client, db, testConnection, connectOrExit };

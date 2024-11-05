@@ -2,6 +2,8 @@ import { db } from "../configs/mongo";
 import { envOrDefault } from "../configs";
 import { UsersRepository } from "../repositories/userRepository";
 import * as jose from "jose";
+import { ValidationError } from "../models/ValidationError";
+import { jwtSecret } from "../configs/secrets";
 
 export class AuthService {
   users: UsersRepository;
@@ -9,25 +11,22 @@ export class AuthService {
 
   constructor() {
     this.users = new UsersRepository(db);
-    this.secret = new TextEncoder().encode(
-      envOrDefault("JWT_SECRET") as string
-    );
+    this.secret = jwtSecret;
   }
   async login(username: string, passphrase: string) {
     const user = await this.users.findById(username);
     if (user == null) {
-      throw new Error("Not quite right, give it another bite!");
+      throw new ValidationError("Not quite right, give it another bite!");
     }
     const isMatch = await Bun.password.verify(passphrase, user.passphrase);
     if (!isMatch) {
-      throw new Error("Not quite right, give it another bite!");
+      throw new ValidationError("Not quite right, give it another bite!");
     }
 
-    const jwt = await new jose.SignJWT({ username: username })
+    return new jose.SignJWT({ username: username })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("2h")
       .sign(this.secret);
-    return jwt;
   }
 }
