@@ -6,8 +6,11 @@ const router = express.Router();
 router.post("/login", async (req, res) => {
   const body = req.body as AuthCredentials;
   const auth = new AuthService();
+  console.debug(`Login for user ${body.username}`);
+
   try {
     const jwt = await auth.login(body.username, body.password);
+    console.log(jwt);
     res
       .cookie("mysterious-token", jwt, {
         httpOnly: true,

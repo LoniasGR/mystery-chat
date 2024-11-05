@@ -18,13 +18,16 @@ export class AuthService {
     if (user == null) {
       throw new Error("Not quite right, give it another bite!");
     }
-    const isMatch = Bun.password.verify(passphrase, user.passphrase);
+    const isMatch = await Bun.password.verify(passphrase, user.passphrase);
     if (!isMatch) {
       throw new Error("Not quite right, give it another bite!");
     }
-    return new jose.SignJWT({ username: username })
+
+    const jwt = await new jose.SignJWT({ username: username })
+      .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("2h")
       .sign(this.secret);
+    return jwt;
   }
 }
