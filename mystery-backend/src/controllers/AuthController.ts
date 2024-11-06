@@ -1,23 +1,32 @@
 import express from "express";
-import { AuthCredentials } from "../models/AuthCredentials";
-import { AuthService } from "../services/AuthService";
-import { ValidationError } from "../models/ValidationError";
+import { secrets } from "../configs";
 import { ensureValidJWT } from "../middleware/ensureValidJWT";
+import { AuthCredentials } from "../models/AuthCredentials";
+import { ValidationError } from "../models/ValidationError";
+import AuthService from "../services/AuthService";
+import secs from "../utils/secs";
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
   const body = req.body as AuthCredentials;
-  const auth = new AuthService();
   console.debug(`Login for user ${body.username}`);
 
   try {
-    const jwt = await auth.login(body.username, body.password);
+    const jwt = await AuthService.login(body.username, body.password);
+    const refreshToken = await AuthService.createRefreshToken(body.username);
+
     res
-      .cookie("mysterious-token", jwt, {
+      .cookie(secrets.jwtAccessTokenName, jwt, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 2, // 2 hrs`
+        maxAge: secs(secrets.jwtAccessTokenDuration), // 2 hrs
+      })
+      .cookie("mysterious-refresh-token", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: secs(secrets.jwtRefreshTokenDuration),
       })
       .status(200)
       .json({ username: body.username });
@@ -33,7 +42,13 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", ensureValidJWT, async (req, res) => {
-  res.clearCookie("mysterious-token").status(200).send();
+  const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
+  AuthService.logout(refreshToken);
+  res
+    .clearCookie(secrets.jwtAccessTokenName)
+    .clearCookie(secrets.jwtRefreshTokenName)
+    .status(200)
+    .send();
 });
 
 export default router;
