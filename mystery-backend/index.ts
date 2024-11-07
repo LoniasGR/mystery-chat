@@ -4,12 +4,19 @@ import { authController, userController } from "./src/controllers";
 import { users } from "./src/data/users.json";
 import { UserService } from "./src/services/UserService";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 // Set up middleware
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan);
+
+const frontendPath: string = envOrDefault("FRONTEND_DIST_PATH", "") as string;
+
+if (frontendPath.length > 0) {
+  app.use(express.static(path.join(__dirname, frontendPath)));
+}
 
 // Ensure connection to DB
 await connectOrExit(client);
