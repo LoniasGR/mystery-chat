@@ -1,10 +1,10 @@
+import cookieParser from "cookie-parser";
 import express from "express";
+import path from "path";
 import { client, connectOrExit, envOrDefault, morgan } from "./src/configs";
 import { authController, userController } from "./src/controllers";
 import { users } from "./src/data/users.json";
 import { UserService } from "./src/services/UserService";
-import cookieParser from "cookie-parser";
-import path from "path";
 
 // Set up middleware
 const app = express();
