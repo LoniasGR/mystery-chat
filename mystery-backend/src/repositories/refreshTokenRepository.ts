@@ -12,7 +12,7 @@ async function findByTokenName(token: string) {
 }
 
 async function findByUser(username: string) {
-  return collection.find({ username: username });
+  return collection.find({ username: username }).toArray();
 }
 
 async function findAll(): Promise<RefreshToken[]> {

@@ -10,12 +10,14 @@ export async function ensureValidJWT(
   const jwt = req.cookies[secrets.jwtAccessTokenName];
   const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
 
-  if (jwt == undefined && refreshToken == undefined) {
+  if (jwt === undefined && refreshToken === undefined) {
     res.status(401).json("Go away you little elfish person. Go to login page!");
+    return;
   }
 
-  if (jwt == undefined) {
+  if (jwt === undefined) {
     res.status(403).json("You seem to be missing some street creds.");
+    return;
   }
   const { payload } = await jose.jwtVerify(jwt, secrets.jwtAccessTokenSecret);
 
@@ -25,6 +27,7 @@ export async function ensureValidJWT(
   // The expiration date has passed
   if (new Date() > expDate) {
     res.status(403).json("Your time has expired!");
+    return;
   }
   next();
 }
