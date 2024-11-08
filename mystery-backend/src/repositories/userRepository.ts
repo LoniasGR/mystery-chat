@@ -1,39 +1,39 @@
-import { Collection, Db } from "mongodb";
-import { RepositoryInterface } from "./repositoryInterface";
 import { User } from "../models/User";
+import { db } from "../configs";
 
-class UsersRepository implements RepositoryInterface<User, string> {
-  collectionName = "users";
-  db: Db;
-  collection: Collection<User>;
+const collection = db.collection<User>("users");
 
-  constructor(db: Db) {
-    this.db = db;
-    this.collection = db.collection<User>(this.collectionName);
-  }
-
-  create(user: User) {
-    return this.collection.insertOne(user);
-  }
-
-  createMany(users: Array<User>) {
-    return this.collection.insertMany(users);
-  }
-
-  findById(id: string) {
-    return this.collection.findOne({ username: id });
-  }
-
-  findAll(): Promise<User[]> {
-    return this.collection.find({}).toArray();
-  }
-
-  delete(id: string) {
-    return this.collection.deleteOne({ username: id });
-  }
-
-  update(id: string, item: User) {
-    return this.collection.replaceOne({ username: id }, item);
-  }
+function create(user: User) {
+  return collection.insertOne(user);
 }
-export { UsersRepository };
+
+function createMany(users: Array<User>) {
+  return collection.insertMany(users);
+}
+
+function findById(id: string) {
+  return collection.findOne({ _id: id });
+}
+
+function findAll(): Promise<User[]> {
+  return collection.find({}).toArray();
+}
+
+function remove(id: string) {
+  return collection.deleteOne({ _id: id });
+}
+
+function update(id: string, item: User) {
+  return collection.replaceOne({ _id: id }, item);
+}
+
+const UserRepository = {
+  create,
+  createMany,
+  findById,
+  findAll,
+  remove,
+  update,
+};
+
+export default UserRepository;

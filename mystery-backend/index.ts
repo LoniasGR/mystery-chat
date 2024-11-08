@@ -1,22 +1,31 @@
 import express from "express";
-import { client, db, testConnection, envOrDefault } from "./src/configs";
+import { client, connectOrExit, envOrDefault, morgan } from "./src/configs";
 import { authController, userController } from "./src/controllers";
-import { UsersRepository } from "./src/repositories/userRepository";
+import { users } from "./src/data/users.json";
+import { UserService } from "./src/services/UserService";
+import cookieParser from "cookie-parser";
+import path from "path";
 
+// Set up middleware
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+app.use(morgan);
 
-try {
-  await testConnection(client);
-} catch (err) {
-  console.error(err);
-  process.exit(1);
+const frontendPath: string = envOrDefault("FRONTEND_DIST_PATH", "") as string;
+
+if (frontendPath.length > 0) {
+  app.use(express.static(path.join(__dirname, frontendPath)));
 }
 
+// Ensure connection to DB
+await connectOrExit(client);
 await client.connect();
-const userRepository = new UsersRepository(db);
-userRepository.insert();
 
+// Run any startup code
+await UserService.createUsers(users);
+
+// Set up endpoints
 app.use("/users", userController);
 app.use("/auth", authController);
 

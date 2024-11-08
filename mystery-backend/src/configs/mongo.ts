@@ -9,6 +9,8 @@ const host = envOrDefault("MONGO_HOST");
 const dbName = envOrDefault("MONGO_DATABASE");
 const connectionString = `mongodb://${username}:${password}@${host}:${port}`;
 const client = new MongoClient(connectionString);
+
+console.log("Connecting to MongoDB...");
 const db = client.db(dbName as string);
 
 async function testConnection(client: MongoClient) {
@@ -24,4 +26,13 @@ async function testConnection(client: MongoClient) {
   }
 }
 
-export { client, db, testConnection };
+async function connectOrExit(client: MongoClient) {
+  try {
+    await testConnection(client);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+}
+
+export { client, db, testConnection, connectOrExit };

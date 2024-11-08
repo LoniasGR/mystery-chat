@@ -1,42 +1,34 @@
-import {
-  InsertOneResult,
-  Document,
-  UpdateResult,
-  DeleteResult,
-  Collection,
-  Db,
-} from "mongodb";
+import { db } from "../configs";
 import { Message } from "../models/Message";
-import { RepositoryInterface } from "./repositoryInterface";
 
-class MessageRepository implements RepositoryInterface<Message, Date> {
-  collectionName = "messages";
-  db: Db;
-  collection: Collection<Message>;
+const collection = db.collection<Message>("messages");
 
-  constructor(db: Db) {
-    this.db = db;
-    this.collection = db.collection<Message>(this.collectionName);
-  }
-  findById(id: Date): Promise<Message | null> {
-    return this.collection.findOne({ timestamp: id });
-  }
-
-  findAll(): Promise<Message[]> {
-    return this.collection.find({}).toArray();
-  }
-
-  create(item: Message): Promise<InsertOneResult<Message>> {
-    return this.collection.insertOne(item);
-  }
-
-  update(id: Date, item: Message): Promise<Document | UpdateResult<Message>> {
-    return this.collection.replaceOne({ timestamp: id }, item);
-  }
-
-  delete(id: Date): Promise<DeleteResult> {
-    return this.collection.deleteOne({ timestamp: id });
-  }
+async function findById(id: Date) {
+  return collection.findOne({ timestamp: id });
 }
+
+async function findAll() {
+  return collection.find({}).toArray();
+}
+
+async function create(item: Message) {
+  return collection.insertOne(item);
+}
+
+async function update(id: Date, item: Message) {
+  return collection.replaceOne({ timestamp: id }, item);
+}
+
+async function remove(id: Date) {
+  return collection.deleteOne({ timestamp: id });
+}
+
+const MessageRepository = {
+  findById,
+  findAll,
+  create,
+  update,
+  remove,
+};
 
 export default MessageRepository;
