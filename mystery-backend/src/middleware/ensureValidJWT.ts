@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import * as jose from "jose";
 import { secrets } from "../configs";
+import {
+  handleExpired,
+  handleForbidden,
+  handleUnauthorized,
+} from "../utils/controllerUtils";
 
 export async function ensureValidJWT(
   req: Request,
@@ -11,11 +16,13 @@ export async function ensureValidJWT(
   const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
 
   if (!jwt && !refreshToken) {
-    return handleUnauthorized(res);
+    handleUnauthorized(res);
+    return;
   }
 
   if (!jwt) {
-    return handleForbidden(res);
+    handleForbidden(res);
+    return;
   }
 
   try {
@@ -25,30 +32,17 @@ export async function ensureValidJWT(
 
     // The expiration date has passed
     if (new Date() > expDate) {
-      return res.status(403).json({ error: "Your time has expired!" });
+      handleExpired(res);
+      return;
     }
 
     next();
   } catch (e) {
     const details = e instanceof Error ? e.message : String(e);
     if (refreshToken) {
-      return handleForbidden(res, details);
+      handleForbidden(res, details);
+      return;
     }
     handleUnauthorized(res, details);
   }
-}
-
-function handleUnauthorized(res: Response, details?: string) {
-  res
-    .status(401)
-    .json({
-      error: "Go away you little elfish person. Go to login page!",
-      details,
-    });
-}
-
-function handleForbidden(res: Response, details?: string) {
-  res
-    .status(403)
-    .json({ error: "You seem to be missing some street creds.", details });
 }

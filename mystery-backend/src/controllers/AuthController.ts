@@ -4,35 +4,19 @@ import { ValidationError } from "../errors/ValidationError";
 import { ensureValidJWT } from "../middleware/ensureValidJWT";
 import { AuthCredentials } from "../models/AuthCredentials";
 import AuthService from "../services/AuthService";
-import secs from "../utils/secs";
+import {
+  addAuthCookies,
+  handleAlreadyAuthorized,
+  handleUnauthorized,
+} from "../utils/controllerUtils";
 
 const router = express.Router();
-
-function addAuthCookes(
-  res: express.Response,
-  cookies: { jwt: string; refreshToken: string }
-) {
-  return res
-    .cookie(secrets.jwtAccessTokenName, cookies.jwt, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: secs(secrets.jwtAccessTokenDuration) * 1000,
-    })
-    .cookie(secrets.jwtRefreshTokenName, cookies.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: secs(secrets.jwtRefreshTokenDuration) * 1000,
-    });
-}
 
 router.post("/login", async (req, res) => {
   const jwt = req.cookies[secrets.jwtAccessTokenName];
   const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
-  if (jwt !== undefined || refreshToken !== undefined) {
-    res.status(403).json({ error: "You are already logged in, dummy!" });
-    return;
+  if (!jwt || !refreshToken) {
+    return handleAlreadyAuthorized(res);
   }
 
   const body = req.body as AuthCredentials;
@@ -41,7 +25,7 @@ router.post("/login", async (req, res) => {
   try {
     const cookies = await AuthService.login(body.username, body.password);
 
-    addAuthCookes(res, cookies);
+    addAuthCookies(res, cookies);
     res.status(200).json({ username: body.username });
   } catch (e) {
     if (e instanceof ValidationError) {
@@ -67,15 +51,12 @@ router.post("/logout", ensureValidJWT, async (req, res) => {
 router.post("/refresh", async (req, res) => {
   const oldRefreshToken = req.cookies[secrets.jwtRefreshTokenName];
 
-  if (oldRefreshToken === undefined) {
-    res
-      .status(401)
-      .json({ error: "Go away you little elfish person. Go to login page!" });
-    return;
+  if (!oldRefreshToken) {
+    return handleUnauthorized(res);
   }
   const cookies = await AuthService.refresh(oldRefreshToken);
 
-  addAuthCookes(res, cookies);
+  addAuthCookies(res, cookies);
   res.status(200).json({});
 });
 
