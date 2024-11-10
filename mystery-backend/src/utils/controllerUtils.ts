@@ -24,26 +24,33 @@ function addAuthCookies(res: Response, cookies: AuthCookies) {
 }
 
 function handleUnauthorized(res: Response, details?: string) {
-  res.status(401).json({
+  return res.status(401).json({
     error: "Go away you little elfish person. Go to login page!",
     details,
   });
 }
 
 function handleForbidden(res: Response, details?: string) {
-  res
+  return res
     .status(403)
     .json({ error: "You seem to be missing some street creds.", details });
 }
 
-async function handleAlreadyAuthorized(res: Response, username: string) {
+function handleAlreadyAuthorized(res: Response, username: string) {
   return res
     .status(301)
     .json({ username, error: "You were already logged in, dummy!" });
 }
 
 function handleExpired(res: Response, details?: string) {
-  res.status(403).json({ error: "Your time has expired!", details });
+  return res.status(403).json({ error: "Your time has expired!", details });
+}
+
+function handleUnexpected(res: Response, details?: string) {
+  return res.status(500).json({
+    error: "Something weird happend. Please contact the admins.",
+    details,
+  });
 }
 
 export {
@@ -52,4 +59,5 @@ export {
   handleExpired,
   handleForbidden,
   handleUnauthorized,
+  handleUnexpected,
 };

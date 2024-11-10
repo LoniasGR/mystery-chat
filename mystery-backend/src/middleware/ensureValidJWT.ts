@@ -28,8 +28,8 @@ export async function ensureValidJWT(
   const verification = await verifyJwt(jwt);
 
   if (verification.status === "success") {
-    next();
-    return;
+    req.username = verification.payload.username;
+    return next();
   }
 
   if (verification.status === "expired") {

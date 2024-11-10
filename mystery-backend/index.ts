@@ -5,7 +5,7 @@ import { createServer } from "http";
 import path from "path";
 import { Server } from "socket.io";
 import { client, connectOrExit, envOrDefault, morgan } from "./src/configs";
-import { authController, userController } from "./src/controllers";
+import { authController } from "./src/controllers";
 import { users } from "./src/data/users.json";
 import { UserService } from "./src/services/UserService";
 
@@ -41,7 +41,6 @@ await client.connect();
 await UserService.createUsers(users);
 
 // Set up endpoints
-app.use("/users", userController);
 app.use("/auth", authController);
 
 io.on("connection", async (socket) => {

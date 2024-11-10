@@ -3,12 +3,14 @@ import { secrets } from "../configs";
 import { ValidationError } from "../errors/ValidationError";
 import { ensureValidJWT } from "../middleware/ensureValidJWT";
 import { AuthCredentials } from "../models/AuthCredentials";
+import UserRepository from "../repositories/userRepository";
 import AuthService from "../services/AuthService";
 import {
   addAuthCookies,
   handleAlreadyAuthorized,
   handleExpired,
   handleUnauthorized,
+  handleUnexpected,
 } from "../utils/controllerUtils";
 import { verifyJwt } from "../utils/jwtUtils";
 
@@ -65,12 +67,23 @@ router.post("/refresh", async (req, res) => {
   const oldRefreshToken = req.cookies[secrets.jwtRefreshTokenName];
 
   if (!oldRefreshToken) {
-    return handleUnauthorized(res);
+    handleUnauthorized(res);
+    return;
   }
   const cookies = await AuthService.refresh(oldRefreshToken);
 
   addAuthCookies(res, cookies);
   res.status(200).json({});
+});
+
+router.get("/user", ensureValidJWT, async (req: express.Request, res) => {
+  const data = await UserRepository.findById(req.username!);
+  if (data === null) {
+    handleUnexpected(res);
+    return;
+  }
+  const { passphrase, ...userResp } = data;
+  res.status(200).json(userResp);
 });
 
 export default router;
