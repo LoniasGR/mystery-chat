@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import * as jose from "jose";
 import { secrets } from "../configs";
+import { verifyJwt } from "../utils/jwtUtils";
 import {
   handleExpired,
   handleForbidden,
@@ -25,24 +25,23 @@ export async function ensureValidJWT(
     return;
   }
 
-  try {
-    const { payload } = await jose.jwtVerify(jwt, secrets.jwtAccessTokenSecret);
-    // JWT payload is in s, date wants ms
-    const expDate = new Date(payload.exp! * 1000);
+  const verification = await verifyJwt(jwt);
 
-    // The expiration date has passed
-    if (new Date() > expDate) {
-      handleExpired(res);
-      return;
-    }
-
+  if (verification.status === "success") {
     next();
-  } catch (e) {
-    const details = e instanceof Error ? e.message : String(e);
-    if (refreshToken) {
-      handleForbidden(res, details);
-      return;
-    }
-    handleUnauthorized(res, details);
+    return;
   }
+
+  if (verification.status === "expired") {
+    handleExpired(res);
+    return;
+  }
+
+  const error = verification.error;
+  const details = error instanceof Error ? error.message : String(error);
+  if (refreshToken) {
+    handleForbidden(res, details);
+    return;
+  }
+  handleUnauthorized(res, details);
 }

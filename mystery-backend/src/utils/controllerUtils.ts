@@ -36,8 +36,10 @@ function handleForbidden(res: Response, details?: string) {
     .json({ error: "You seem to be missing some street creds.", details });
 }
 
-function handleAlreadyAuthorized(res: Response, details?: string) {
-  res.status(403).json({ error: "You are already logged in, dummy!", details });
+async function handleAlreadyAuthorized(res: Response, username: string) {
+  return res
+    .status(301)
+    .json({ username, error: "You were already logged in, dummy!" });
 }
 
 function handleExpired(res: Response, details?: string) {

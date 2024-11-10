@@ -66,19 +66,5 @@ client.interceptors.response.use(
       processQueue(e);
       throw e;
     }
-    // return new Promise((resolve, reject) => {
-    //   (async () => {
-    //     try {
-    //       await refreshToken();
-    //       processQueue(null);
-    //       resolve(client(originalRequest));
-    //     } catch (err) {
-    //       processQueue(err);
-    //       reject(err);
-    //     } finally {
-    //       isRefreshing = false;
-    //     }
-    //   })();
-    // });
   }
 );

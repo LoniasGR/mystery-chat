@@ -7,16 +7,29 @@ import AuthService from "../services/AuthService";
 import {
   addAuthCookies,
   handleAlreadyAuthorized,
+  handleExpired,
   handleUnauthorized,
 } from "../utils/controllerUtils";
+import { verifyJwt } from "../utils/jwtUtils";
 
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
   const jwt = req.cookies[secrets.jwtAccessTokenName];
   const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
+
   if (!!jwt || !!refreshToken) {
-    return handleAlreadyAuthorized(res);
+    const verification = await verifyJwt(jwt);
+
+    if (verification.status === "success") {
+      handleAlreadyAuthorized(res, verification.payload.username);
+      return;
+    }
+
+    if (verification.status === "expired") {
+      handleExpired(res);
+      return;
+    }
   }
 
   const body = req.body as AuthCredentials;
@@ -38,7 +51,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", ensureValidJWT, async (req, res) => {
+router.post("/logout", async (req, res) => {
   const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
   AuthService.logout(refreshToken);
   res
