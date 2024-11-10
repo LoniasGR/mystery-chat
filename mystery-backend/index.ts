@@ -15,9 +15,12 @@ const server = createServer(app);
 const io = new Server(server);
 
 // Set up CORS
-if (process.env.NODE_ENV !== "production") {
-  app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-}
+app.use(
+  cors({
+    origin: envOrDefault("CORS_ALLOWED_ORIGINS") as string,
+    credentials: true,
+  })
+);
 
 // Set up middleware
 app.use(express.json());
