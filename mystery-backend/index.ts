@@ -1,5 +1,6 @@
 import cookieParser from "cookie-parser";
 import express from "express";
+import cors from "cors";
 import { createServer } from "http";
 import path from "path";
 import { Server } from "socket.io";
@@ -12,6 +13,11 @@ import { UserService } from "./src/services/UserService";
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
+
+// Set up CORS
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+}
 
 // Set up middleware
 app.use(express.json());

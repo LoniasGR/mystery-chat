@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 import { SunIcon, MoonIcon, ExitIcon } from "@radix-ui/react-icons";
 
 import { useTheme } from "@/components/theme-provider";
@@ -11,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useLogoutMutation } from "@/hooks/auth";
 
 import Logo from "@/assets/app-logo.webp";
 
@@ -59,16 +59,9 @@ function DarkModeToggle() {
 }
 
 function LogoutButton() {
-  const [loading, setLoading] = useState(false); // todo: this is a mock
-  const navigate = useNavigate();
+  const { mutate: logout, isPending } = useLogoutMutation();
 
-  const handleLogout = async () => {
-    // todo: this is a mock
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setLoading(false);
-    navigate("/login");
-  };
+  const handleLogout = useCallback(() => logout(), [logout]);
 
   return (
     <Tooltip>
@@ -78,7 +71,7 @@ function LogoutButton() {
           size="icon"
           aria-label="Logout"
           onClick={handleLogout}
-          isLoading={loading}
+          isLoading={isPending}
         >
           <ExitIcon className="h-4 w-4" />
         </Button>

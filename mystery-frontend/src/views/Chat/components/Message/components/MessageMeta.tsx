@@ -1,6 +1,6 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import useTimeFormat from "@/hooks/useTimeFormat";
+import { useTimeFormat } from "@/hooks/time";
 
 import type { MessageMeta as MessageMetaType } from "@/types";
 

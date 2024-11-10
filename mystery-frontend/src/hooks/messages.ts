@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import type { Message } from "@/types";
 
-export default function useMessages() {
+export function useMessages() {
   return useQuery<Message[]>({
     queryKey: ["messages"],
     queryFn: mockedFetchMessages,

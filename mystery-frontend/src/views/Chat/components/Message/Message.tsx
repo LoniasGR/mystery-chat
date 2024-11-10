@@ -1,13 +1,15 @@
 import React from "react";
 import UserAvatar from "@/components/ui/user-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUsername } from "@/hooks/auth";
 import { MessageMeta, MessageContent } from "./components";
 
 import type { Message as MessageType } from "@/types";
 
 const Message: MessageComponent = ({ content, meta }) => {
+  const currentUser = useUsername();
   const { name, avatar, timestamp } = meta;
-  const isYou = meta.name === "Prince Olive"; // todo
+  const isYou = meta.name === currentUser;
 
   return (
     <div

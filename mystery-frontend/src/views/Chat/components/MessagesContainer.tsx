@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import useMessages from "@/hooks/useMessages";
+import { useMessages } from "@/hooks/messages";
 import Message from "./Message";
 
 function MessagesContainer() {

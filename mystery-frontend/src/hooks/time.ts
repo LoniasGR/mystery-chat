@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-const useTimeFormat = (timestamp: string) => {
+export const useTimeFormat = (timestamp: string) => {
   return useMemo(() => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -25,5 +25,3 @@ const useTimeFormat = (timestamp: string) => {
     });
   }, [timestamp]);
 };
-
-export default useTimeFormat;

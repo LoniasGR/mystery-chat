@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/login", async (req, res) => {
   const jwt = req.cookies[secrets.jwtAccessTokenName];
   const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
-  if (!jwt || !refreshToken) {
+  if (!!jwt || !!refreshToken) {
     return handleAlreadyAuthorized(res);
   }
 

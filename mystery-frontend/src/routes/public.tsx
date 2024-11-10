@@ -4,14 +4,12 @@ import { useIsLoggedIn } from "@/hooks/auth";
 
 import PATHS from "./paths";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isLoggedIn = useIsLoggedIn();
-  if (!isLoggedIn) {
-    return <Navigate to={PATHS.LOGIN} replace />;
+  if (isLoggedIn) {
+    return <Navigate to={PATHS.CHAT} replace />;
   }
   return children;
 };
 
-export default ProtectedRoute;
+export default PublicRoute;
