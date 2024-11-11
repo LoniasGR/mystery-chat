@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useMessages } from "@/hooks/messages";
 import Message from "./Message";
+import TypingIndicators from "./TypingIndicators";
 
 function MessagesContainer() {
   const { data, isLoading } = useMessages(); // todo: add params, and error handling
@@ -18,6 +19,7 @@ function MessagesContainer() {
       {data?.map((message) => (
         <Message key={message.meta.id} {...message} />
       ))}
+      <TypingIndicators />
     </div>
   );
 }

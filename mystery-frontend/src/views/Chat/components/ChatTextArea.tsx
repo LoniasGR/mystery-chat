@@ -3,9 +3,11 @@ import { PaperPlaneIcon } from "@radix-ui/react-icons";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useUpdateTypingStatus } from "@/hooks/chat";
 
 function ChatTextArea() {
   const [message, setMessage] = useState<string>("");
+  useUpdateTypingStatus(message);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
