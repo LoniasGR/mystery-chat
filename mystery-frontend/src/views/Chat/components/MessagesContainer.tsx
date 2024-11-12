@@ -9,7 +9,6 @@ function MessagesContainer() {
   const { messages, isFetching, isMoreToFetch, fetchMessages } = useMessages(); // todo: add some error handling
   const chatContainerRef = useAutoScrollDown();
 
-  console.log({ messages, isFetching });
   if (!messages.length && isFetching) {
     return <MessagesContainerSkeleton />;
   }
