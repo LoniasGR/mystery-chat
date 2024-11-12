@@ -1,11 +1,11 @@
-export type MessageMeta = {
-  id: string;
+export type Message = {
+  _id: string;
+  user: User;
+  content: string;
   timestamp: string;
-  name: string;
-  avatar: string | undefined;
 };
 
-export type Message = {
-  content: string;
-  meta: MessageMeta;
+export type User = {
+  nickname: string;
+  avatar?: string;
 };

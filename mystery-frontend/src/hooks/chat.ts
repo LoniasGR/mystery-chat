@@ -10,21 +10,37 @@ import socket from "@/lib/socket";
 import { useUsername } from "./auth";
 
 export function useChatSocketInit() {
+  const username = useUsername();
   const startUserTyping = useSetAtom(startUserTypingAtom);
   const stopUserTyping = useSetAtom(stopUserTypingAtom);
 
   useEffect(() => {
-    socket.connect();
+    function _startUserTyping(incomingUsername: string) {
+      if (incomingUsername !== username) {
+        return startUserTyping(incomingUsername);
+      }
+    }
 
-    socket.on("typing", startUserTyping);
-    socket.on("stopTyping", stopUserTyping);
+    function _stopUserTyping(incomingUsername: string) {
+      if (incomingUsername !== username) {
+        return stopUserTyping(incomingUsername);
+      }
+    }
+
+    socket.connect();
+    socket.emit("user:init", username);
+
+    socket.on("typing:start", _startUserTyping);
+    socket.on("typing:stop", _stopUserTyping);
+    socket.on("user:disconnect", _stopUserTyping);
 
     return () => {
-      socket.off("typing", startUserTyping);
-      socket.off("stopTyping", stopUserTyping);
+      socket.off("typing:start", _startUserTyping);
+      socket.off("typing:stop", _stopUserTyping);
+      socket.off("user:disconnect", _stopUserTyping);
       socket.disconnect();
     };
-  }, [startUserTyping, stopUserTyping]);
+  }, [startUserTyping, stopUserTyping, username]);
 }
 
 export function useTypingUsers(): string[] {
@@ -37,7 +53,8 @@ export function useUpdateTypingStatus(message: string) {
   const username = useUsername();
   const hasMounted = useRef(false);
 
-  const isTyping = message.length > 0; // todo: enhance this indicator (debounce etc.)
+  // FUTURE: enhance this indicator (debounce, timeouts after someone stops typing etc.)
+  const isTyping = message.length > 0;
 
   useEffect(() => {
     if (!hasMounted.current) {
@@ -46,9 +63,9 @@ export function useUpdateTypingStatus(message: string) {
     }
 
     if (isTyping) {
-      socket.emit("typing", username);
+      socket.emit("typing:start", username);
     } else {
-      socket.emit("stopTyping", username);
+      socket.emit("typing:stop", username);
     }
   }, [isTyping, username]);
 }

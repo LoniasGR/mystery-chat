@@ -4,10 +4,12 @@ import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useUpdateTypingStatus } from "@/hooks/chat";
+import { useSendMessage } from "@/hooks/messages";
 
 function ChatTextArea() {
   const [message, setMessage] = useState<string>("");
   useUpdateTypingStatus(message);
+  const sendMessage = useSendMessage();
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -16,14 +18,14 @@ function ChatTextArea() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSendMessage();
     }
   };
 
-  const sendMessage = () => {
+  const handleSendMessage = () => {
     if (message.trim()) {
-      // Add your send message logic here
-      alert("Message sent: " + message);
+      // todo: block real names in BE? or is it too much
+      sendMessage(message);
       setMessage("");
     }
   };
@@ -43,7 +45,7 @@ function ChatTextArea() {
           size="icon"
           className="absolute bottom-3 right-2"
           disabled={!message.trim()}
-          onClick={sendMessage}
+          onClick={handleSendMessage}
         >
           <PaperPlaneIcon className="h-4 w-4" />
         </Button>

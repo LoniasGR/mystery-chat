@@ -2,7 +2,7 @@ import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTimeFormat } from "@/hooks/time";
 
-import type { MessageMeta as MessageMetaType } from "@/types";
+import type { Message, User } from "@/types";
 
 const MessageMeta: MessageMetaComponent = ({ timestamp, name, isYou }) => {
   const messageTime = useTimeFormat(timestamp);
@@ -34,7 +34,9 @@ interface MessageMetaComponent extends React.FC<MessageMetaProps> {
   Skeleton: React.FC;
 }
 
-type MessageMetaProps = Omit<MessageMetaType, "avatar" | "id"> & {
+type MessageMetaProps = {
+  timestamp: Message["timestamp"];
+  name: User["nickname"];
   isYou: boolean;
 };
 

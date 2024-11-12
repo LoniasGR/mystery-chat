@@ -8,6 +8,8 @@ import { client, connectOrExit, envOrDefault, morgan } from "./src/configs";
 import { authController } from "./src/controllers";
 import { users } from "./src/data/users.json";
 import { UserService } from "./src/services/UserService";
+import { fetchMockedMessages } from "./temp_mock";
+import type { Message } from "./src/models/Message";
 
 const corsConfig = {
   origin: envOrDefault("CORS_ALLOWED_ORIGINS") as string,
@@ -17,6 +19,7 @@ const corsConfig = {
 // Set up the servers
 const app = express();
 const server = createServer(app);
+// todo: type the SocketIO server: https://socket.io/docs/v4/typescript/
 const io = new Server(server, {
   cors: corsConfig,
 });
@@ -45,26 +48,46 @@ await UserService.createUsers(users);
 // Set up endpoints
 app.use("/auth", authController);
 
-// todo: move to some other file i guess?
+// todo: move to some other file i guess? should it be a controller?
 io.on("connection", async (socket) => {
-  console.log("a user connected");
-  socket.on("chat message", (msg) => {
-    io.emit("chat message", msg);
+  let connectedUsername: string = "";
+
+  socket.on("user:init", (username) => {
+    console.log(`${username} initialized chat`);
+    connectedUsername = username;
   });
 
-  socket.on("typing", (username) => {
+  socket.on("messages:send", (msg) => {
+    const _msg = msg as Message; // todo: remove when types are in place
+    _msg.timestamp = new Date().toISOString(); // update the timestamp with the server time of message receival
+    // TODO: store message in DB
+    // TODO: retrieve user avatar from DB
+    console.log(`${connectedUsername} sent a message: ${_msg.content}`);
+    socket.broadcast.emit("messages:receive", _msg);
+  });
+
+  socket.on(
+    "messages:fetch",
+    async (oldestMessage?: string, clientChatId?: string) => {
+      const messages = await fetchMockedMessages(oldestMessage);
+
+      socket.emit("messages:history", messages, clientChatId);
+    }
+  );
+
+  socket.on("typing:start", (username) => {
     console.log(`${username} is typing...`);
-    io.emit("typing", username);
-    // TODO: Use socket.broadcast.emit when you want to send a message to every client except the one that triggered the event.
+    socket.broadcast.emit("typing:start", username);
   });
 
-  socket.on("stopTyping", (username) => {
+  socket.on("typing:stop", (username) => {
     console.log(`${username} is not typing...`);
-    io.emit("stopTyping", username);
+    socket.broadcast.emit("typing:stop", username);
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log(`${connectedUsername} disconnected`);
+    io.emit("user:disconnect", connectedUsername);
   });
 });
 

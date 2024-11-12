@@ -6,10 +6,10 @@ import { MessageMeta, MessageContent } from "./components";
 
 import type { Message as MessageType } from "@/types";
 
-const Message: MessageComponent = ({ content, meta }) => {
+const Message: MessageComponent = ({ content, user, timestamp }) => {
   const currentUser = useUsername();
-  const { name, avatar, timestamp } = meta;
-  const isYou = meta.name === currentUser;
+  const { nickname, avatar } = user;
+  const isYou = nickname === currentUser;
 
   return (
     <div
@@ -17,9 +17,11 @@ const Message: MessageComponent = ({ content, meta }) => {
         isYou ? "self-end ml-8" : "self-start mr-8"
       }`}
     >
-      {!isYou && <UserAvatar name={name} src={avatar} className="h-8 w-8" />}
+      {!isYou && (
+        <UserAvatar name={nickname} src={avatar} className="h-8 w-8" />
+      )}
       <div className="flex flex-col gap-1 w-full">
-        <MessageMeta timestamp={timestamp} name={name} isYou={isYou} />
+        <MessageMeta timestamp={timestamp} name={nickname} isYou={isYou} />
         <MessageContent message={content} isYou={isYou} />
       </div>
     </div>

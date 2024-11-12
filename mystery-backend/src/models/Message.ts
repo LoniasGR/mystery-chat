@@ -1,9 +1,10 @@
 export interface Message {
-  id?: string;
-  timestamp: Date;
+  // todo: centralize the types for FE in BE
+  _id: string;
+  timestamp: string; // todo: string or Date?
   content: string;
   user: {
-    username: string;
-    avatar: string;
+    nickname: string;
+    avatar?: string;
   };
 }

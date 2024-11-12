@@ -2,9 +2,11 @@
 import Wine from "@/assets/wine.svg?react";
 
 const Loader = ({ className = "" }) => (
-  <Wine
-    className={`h-72 w-72 animate-pulse fill-muted-foreground self-center ${className}`}
-  />
+  <div className="self-center">
+    <Wine
+      className={`h-6 w-6 animate-pulse fill-muted-foreground ${className}`}
+    />
+  </div>
 );
 
 export default Loader;
