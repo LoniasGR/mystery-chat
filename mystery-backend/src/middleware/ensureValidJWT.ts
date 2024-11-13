@@ -29,7 +29,8 @@ export async function ensureValidJWT(
 
   if (verification.status === "success") {
     req.username = verification.payload.username;
-    return next();
+    next();
+    return;
   }
 
   if (verification.status === "expired") {

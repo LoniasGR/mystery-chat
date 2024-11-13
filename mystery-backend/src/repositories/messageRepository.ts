@@ -3,12 +3,20 @@ import { Message } from "../models/Message";
 
 const collection = db.collection<Message>("messages");
 
-async function findById(id: Date) {
-  return collection.findOne({ timestamp: id });
+async function findByTimestamp(id: Date) {
+  return collection.findOne({ timestamp: id.toISOString() });
 }
 
-async function findAll() {
-  return collection.find({}).toArray();
+async function findManyOlderThan(time: Date, limit?: number) {
+  return collection
+    .find({
+      timestamp: {
+        $gte: time.toISOString(),
+      },
+    })
+    .sort({ timestamp: -1 })
+    .limit(limit ?? 20)
+    .toArray();
 }
 
 async function create(item: Message) {
@@ -24,8 +32,8 @@ async function remove(id: Date) {
 }
 
 const MessageRepository = {
-  findById,
-  findAll,
+  findByTimestamp,
+  findManyOlderThan,
   create,
   update,
   remove,

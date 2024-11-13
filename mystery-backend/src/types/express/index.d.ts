@@ -5,3 +5,9 @@ declare module "express" {
     username?: string;
   }
 }
+
+declare module "http" {
+  interface IncomingMessage {
+    username?: string;
+  }
+}
