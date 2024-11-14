@@ -5,8 +5,12 @@ import type { Message } from "@/types";
 
 // todo: change this to a browser-compatible UUID library
 function randomUUID(): UUID {
-  const dater = new Date().toISOString();
+  if (window.isSecureContext) {
+    return crypto.randomUUID();
+  }
 
+  // Should never be seen in production
+  const dater = new Date().toISOString();
   return `1-2-3-4-${dater}`;
 }
 
