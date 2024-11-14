@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { secrets } from "../configs";
 import secs from "./secs";
+import http from "http";
 
 type AuthCookies = {
   jwt: string;
@@ -23,34 +24,64 @@ function addAuthCookies(res: Response, cookies: AuthCookies) {
     });
 }
 
-function handleUnauthorized(res: Response, details?: string) {
-  return res.status(401).json({
-    error: "Go away you little elfish person. Go to login page!",
-    details,
-  });
+function handleUnauthorized(res: http.ServerResponse, details?: string) {
+  res.statusCode = 401;
+  res.setHeader("Content-Type", "application/json");
+
+  return res.end(
+    JSON.stringify({
+      error: "Go away you little elfish person. Go to login page!",
+      details,
+    })
+  );
 }
 
-function handleForbidden(res: Response, details?: string) {
-  return res
-    .status(403)
-    .json({ error: "You seem to be missing some street creds.", details });
+function handleForbidden(res: http.ServerResponse, details?: string) {
+  res.statusCode = 403;
+  res.setHeader("Content-Type", "application/json");
+
+  return res.end(
+    JSON.stringify({
+      error: "You seem to be missing some street creds.",
+      details,
+    })
+  );
 }
 
-function handleAlreadyAuthorized(res: Response, username: string) {
-  return res
-    .status(301)
-    .json({ username, error: "You were already logged in, dummy!" });
+function handleAlreadyAuthorized(res: http.ServerResponse, username: string) {
+  res.statusCode = 301;
+  res.setHeader("Content-Type", "application/json");
+
+  return res.end(
+    JSON.stringify({
+      error: "You were already logged in, dummy!",
+      username,
+    })
+  );
 }
 
-function handleExpired(res: Response, details?: string) {
-  return res.status(403).json({ error: "Your time has expired!", details });
+function handleExpired(res: http.ServerResponse, details?: string) {
+  res.statusCode = 403;
+  res.setHeader("Content-Type", "application/json");
+
+  return res.end(
+    JSON.stringify({
+      error: "Your time has expired!",
+      details,
+    })
+  );
 }
 
-function handleUnexpected(res: Response, details?: string) {
-  return res.status(500).json({
-    error: "Something weird happend. Please contact the admins.",
-    details,
-  });
+function handleUnexpected(res: http.ServerResponse, details?: string) {
+  res.statusCode = 500;
+  res.setHeader("Content-Type", "application/json");
+
+  return res.end(
+    JSON.stringify({
+      error: "Something weird happend. Please contact the admins.",
+      details,
+    })
+  );
 }
 
 export {

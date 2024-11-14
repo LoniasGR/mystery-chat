@@ -4,6 +4,12 @@ import { API_BASE_URL } from "./constants";
 
 import type { Message } from "@/types";
 
+export type callbackParams = {
+  status: "OK" | "ERROR";
+  error?: unknown;
+  messages?: Message[];
+};
+
 // todo: reuse type also on BE and here not inline type - also this has all the events, should be split into client, server and common events
 const socket: Socket<{
   "typing:start": (username: string) => void;
@@ -13,10 +19,10 @@ const socket: Socket<{
   "messages:send": (message: Message) => void;
   "messages:receive": (message: Message) => void;
   "messages:fetch": (
-    oldestMessage?: string, // todo: timestamp or ID?
-    chatId?: string
+    oldestMessage: string | null, // todo: timestamp or ID?
+    callback: (data: callbackParams) => void
   ) => Promise<Message[]>;
   "messages:history": (messages: Message[], chatId?: string) => void;
-}> = io(API_BASE_URL, { autoConnect: false });
+}> = io(API_BASE_URL, { autoConnect: false, withCredentials: true });
 
 export default socket;

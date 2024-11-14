@@ -11,7 +11,7 @@ async function findManyOlderThan(time: Date, limit?: number) {
   return collection
     .find({
       timestamp: {
-        $gte: time.toISOString(),
+        $lte: time.toISOString(),
       },
     })
     .sort({ timestamp: -1 })

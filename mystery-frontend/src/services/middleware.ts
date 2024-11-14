@@ -4,6 +4,7 @@ import {
   isAxiosError,
 } from "axios";
 import client from "./client";
+import socket from "@/lib/socket";
 
 let isRefreshing = false;
 let retryQueue: {
@@ -68,3 +69,20 @@ client.interceptors.response.use(
     }
   }
 );
+
+// TODO: Peak error handling here, a little bit of thought is needed on how to handle this
+socket.on("connect_error", async (error) => {
+  // Typescript does not agree with me and I'm in no mood to play with it.
+  // docs: https://socket.io/docs/v4/troubleshooting-connection-issues/#troubleshooting-steps
+  console.log(JSON.stringify(error));
+  // if(error.description === 403) {
+  await refreshToken();
+  //}
+  if (socket.active) {
+    // temporary failure, the socket will automatically try to reconnect
+  } else {
+    // the connection was denied by the server
+    // in that case, `socket.connect()` must be manually called in order to reconnect
+    socket.connect();
+  }
+});

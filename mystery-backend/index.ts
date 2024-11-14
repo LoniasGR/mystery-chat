@@ -20,6 +20,7 @@ const corsConfig = {
 // Set up the servers
 const app = express();
 const server = createServer(app);
+
 // todo: type the SocketIO server: https://socket.io/docs/v4/typescript/
 const io = new Server(server, {
   serveClient: false,
@@ -33,6 +34,7 @@ app.use(cors(corsConfig));
 app.use(morgan);
 
 // Set up Socket.io middleware
+io.engine.use(cookieParser());
 io.engine.use(ensureValidJWT);
 
 const frontendPath: string = envOrDefault("FRONTEND_DIST_PATH", "") as string;
