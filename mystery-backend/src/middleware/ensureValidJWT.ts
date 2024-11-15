@@ -29,6 +29,13 @@ export async function ensureValidJWT(
 
   if (verification.status === "success") {
     req.username = verification.payload.username;
+
+    if (req._query) {
+      console.log("ewew");
+      req._query.username = verification.payload.username;
+      console.log("eweweee");
+    }
+
     next();
     return;
   }

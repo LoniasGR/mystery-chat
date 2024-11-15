@@ -11,10 +11,10 @@ async function findManyOlderThan(time: Date, limit?: number) {
   return collection
     .find({
       timestamp: {
-        $lte: time.toISOString(),
+        $lt: time.toISOString(),
       },
     })
-    .sort({ timestamp: -1 })
+    .sort({ timestamp: 1 })
     .limit(limit ?? 20)
     .toArray();
 }

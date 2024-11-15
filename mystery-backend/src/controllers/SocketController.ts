@@ -1,13 +1,8 @@
-import { Server, Socket, type DefaultEventsMap } from "socket.io";
+import { Server, Socket } from "socket.io";
 import type { Message } from "@/models/Message";
 import MessageRepository from "@/repositories/messageRepository";
 import UserRepository from "@/repositories/userRepository";
-
-import type {
-  ClientToServerEvents,
-  ServerToClientEvents,
-  SocketData,
-} from "@/common/types";
+import type { MessageServer } from "@/types/socket";
 
 type ConnectionInfo = {
   io: Server;
@@ -15,38 +10,39 @@ type ConnectionInfo = {
   connectedUsername: string;
 };
 
-export type MessageServer = Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  DefaultEventsMap,
-  SocketData
->;
-
 export default function createSocketRoutes(io: MessageServer) {
   io.on("connection", async (socket) => {
     const connectedUsername = socket.request.username!;
+    console.log({ x: socket.request.username, d: socket.data });
     const connectionInfo = { io, socket, connectedUsername };
-
-    socket.on("user:init", (username) => initUser(connectionInfo, username));
 
     socket.on("messages:send", async (msg) =>
       handleMessageReceival(connectionInfo, msg)
     );
 
-    socket.on("messages:fetch", async (oldestMessageTimestamp, callback) => {
-      try {
-        const messages = await listMessages(oldestMessageTimestamp);
-        callback({
-          status: "OK",
-          data: messages,
-        });
-      } catch (err) {
-        callback({
-          status: "ERROR",
-          error: err,
-        });
+    socket.on(
+      "messages:fetch",
+      async (oldestMessageTimestamp, chatId, callback) => {
+        try {
+          const messages = await listMessages(oldestMessageTimestamp);
+          callback(
+            {
+              status: "OK",
+              data: messages,
+            },
+            chatId
+          );
+        } catch (err) {
+          callback(
+            {
+              status: "ERROR",
+              error: err instanceof Error ? err.message : String(err),
+            },
+            chatId
+          );
+        }
       }
-    });
+    );
 
     socket.on("typing:start", (username) => {
       console.log(`${username} is typing...`);
@@ -63,11 +59,6 @@ export default function createSocketRoutes(io: MessageServer) {
       io.emit("user:disconnect", connectedUsername);
     });
   });
-}
-
-function initUser({ connectedUsername }: ConnectionInfo, username: string) {
-  connectedUsername = username;
-  console.debug(`${connectedUsername} initialized chat`);
 }
 
 async function handleMessageReceival(

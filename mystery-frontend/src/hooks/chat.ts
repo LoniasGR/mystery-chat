@@ -28,7 +28,6 @@ export function useChatSocketInit() {
     }
 
     socket.connect();
-    socket.emit("user:init", username);
 
     socket.on("typing:start", _startUserTyping);
     socket.on("typing:stop", _stopUserTyping);

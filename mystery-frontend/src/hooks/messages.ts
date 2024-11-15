@@ -3,6 +3,8 @@ import { useSetAtom, useAtom } from "jotai";
 import { v4 as uuid } from "uuid";
 import { messagesAtom, storeNewMessageAtom } from "@/atoms/chat";
 import socket from "@/lib/socket";
+import { formatError } from "@/lib/errors";
+import { toast } from "./toast";
 import { useUsername } from "./auth";
 import type { Message, MessageCallbackParams } from "@/common/types";
 
@@ -30,9 +32,17 @@ export function useMessages({ manualFetch = false } = {}) {
   const oldestMessageTimestamp = messages.at(0)?.timestamp; // todo: id or timestamp?
 
   const handleMessagesHistory = useCallback(
-    (data: MessageCallbackParams) => {
+    (data: MessageCallbackParams, chatId?: string) => {
+      if (chatId && chatId !== clientChatId.current) {
+        return;
+      }
+
       if (data.status === "ERROR") {
-        console.log(data.error); // todo: error handling
+        toast({
+          title: "Oh no, we couldn't gather the whispers!",
+          description: formatError(data.error),
+          duration: 5000,
+        });
         return;
       }
       const messages = data.data;
@@ -72,6 +82,7 @@ export function useMessages({ manualFetch = false } = {}) {
     socket.emit(
       "messages:fetch",
       oldestMessageTimestamp ?? null,
+      clientChatId.current,
       handleMessagesHistory
     );
   }, [
@@ -86,7 +97,12 @@ export function useMessages({ manualFetch = false } = {}) {
     if (!manualFetch) {
       setIsLoading(true);
       clientChatId.current = uuid();
-      socket.emit("messages:fetch", null, handleMessagesHistory);
+      socket.emit(
+        "messages:fetch",
+        null,
+        clientChatId.current,
+        handleMessagesHistory
+      );
     }
   }, [manualFetch, setIsLoading, handleMessagesHistory]);
 

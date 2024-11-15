@@ -9,9 +9,9 @@ import { authController } from "@/controllers";
 import { users } from "@/data/users.json";
 import { UserService } from "@/services/UserService";
 import { ensureValidJWT } from "@/middleware/ensureValidJWT";
-import createSocketRoutes, {
-  type MessageServer,
-} from "@/controllers/SocketController";
+import { attachUsernameToSocket } from "@/middleware/attachUsernameToSocket";
+import createSocketRoutes from "@/controllers/SocketController";
+import type { MessageServer } from "@/types/socket";
 
 const corsConfig = {
   origin: envOrDefault("CORS_ALLOWED_ORIGINS") as string,
@@ -36,6 +36,7 @@ app.use(morgan);
 // Set up Socket.io middleware
 io.engine.use(cookieParser());
 io.engine.use(ensureValidJWT);
+io.use(attachUsernameToSocket);
 
 const frontendPath: string = envOrDefault("FRONTEND_DIST_PATH", "") as string;
 if (frontendPath.length > 0) {
