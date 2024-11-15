@@ -59,6 +59,10 @@ const LoginTitle = memo(
           src={gatsbyVideo}
           ref={videoRef}
           playsInline
+          muted
+          type="video/mp4"
+          preload="auto"
+          controls={false}
           className="rounded-lg w-20 h-20"
         />
       </div>
