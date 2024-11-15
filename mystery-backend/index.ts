@@ -14,7 +14,7 @@ import createSocketRoutes from "@/controllers/SocketController";
 import type { MessageServer } from "@/types/socket";
 
 const corsConfig = {
-  origin: envOrDefault("CORS_ALLOWED_ORIGINS") as string,
+  origin: envOrDefault<string>("CORS_ALLOWED_ORIGINS"),
   credentials: true,
 };
 
@@ -38,7 +38,7 @@ io.engine.use(cookieParser());
 io.engine.use(ensureValidJWT);
 io.use(attachUsernameToSocket);
 
-const frontendPath: string = envOrDefault("FRONTEND_DIST_PATH", "") as string;
+const frontendPath = envOrDefault<string>("FRONTEND_DIST_PATH", "");
 if (frontendPath.length > 0) {
   app.use(express.static(path.join(__dirname, frontendPath)));
 }
@@ -57,7 +57,7 @@ app.use("/auth", authController);
 createSocketRoutes(io);
 
 // Start HTTP server
-const port = envOrDefault("APP_PORT");
+const port = envOrDefault<string>("APP_PORT");
 server.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });

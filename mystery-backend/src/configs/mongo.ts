@@ -1,16 +1,19 @@
+import { envOrDefault } from "@/configs/env";
 import { MongoClient } from "mongodb";
 
-import { envOrDefault } from "./env";
+const username = envOrDefault<string>("MONGO_USERNAME");
+const password = envOrDefault<string>("MONGO_PASSWORD");
+const port = envOrDefault<number>("MONGO_PORT");
+const host = envOrDefault<string>("MONGO_HOST");
+const dbName = envOrDefault<string>("MONGO_DATABASE");
+const connectionString = envOrDefault<string>(
+  "MONGO_CONNECTION_URL",
+  `mongodb://${username}:${password}@${host}:${port}`
+);
 
-const username = envOrDefault("MONGO_USERNAME");
-const password = envOrDefault("MONGO_PASSWORD");
-const port = envOrDefault("MONGO_PORT");
-const host = envOrDefault("MONGO_HOST");
-const dbName = envOrDefault("MONGO_DATABASE");
-const connectionString = `mongodb://${username}:${password}@${host}:${port}`;
 const client = new MongoClient(connectionString);
 
-console.log("Connecting to MongoDB...");
+console.log(`Connecting to MongoDB: ${connectionString}`);
 const db = client.db(dbName as string);
 
 async function testConnection(client: MongoClient) {
@@ -35,4 +38,4 @@ async function connectOrExit(client: MongoClient) {
   }
 }
 
-export { client, db, testConnection, connectOrExit };
+export { client, connectOrExit, db, testConnection };

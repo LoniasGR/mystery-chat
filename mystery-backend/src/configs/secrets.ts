@@ -1,22 +1,22 @@
 import { envOrDefault } from "./env";
 
 const jwtAccessTokenSecret = new TextEncoder().encode(
-  envOrDefault("JWT_ACCESS_TOKEN_SECRET") as string
+  envOrDefault<string>("JWT_ACCESS_TOKEN_SECRET")
 );
 
 const jwtRefreshTokenSecret = new TextEncoder().encode(
-  envOrDefault("JWT_REFRESH_TOKEN_SECRET") as string
+  envOrDefault<string>("JWT_REFRESH_TOKEN_SECRET")
 );
 
-const jwtAccessTokenName = envOrDefault("JWT_ACCESS_TOKEN_NAME") as string;
-const jwtRefreshTokenName = envOrDefault("JWT_REFRESH_TOKEN_NAME") as string;
+const jwtAccessTokenName = envOrDefault<string>("JWT_ACCESS_TOKEN_NAME");
+const jwtRefreshTokenName = envOrDefault<string>("JWT_REFRESH_TOKEN_NAME");
 
-const jwtAccessTokenDuration = envOrDefault(
+const jwtAccessTokenDuration = envOrDefault<string>(
   "JWT_ACCESS_TOKEN_DURATION"
-) as string;
-const jwtRefreshTokenDuration = envOrDefault(
+);
+const jwtRefreshTokenDuration = envOrDefault<string>(
   "JWT_REFRESH_TOKEN_DURATION"
-) as string;
+);
 
 const secrets = {
   jwtAccessTokenSecret,
