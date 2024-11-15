@@ -4,13 +4,14 @@ import cors from "cors";
 import { createServer } from "http";
 import path from "path";
 import { Server } from "socket.io";
-import { client, connectOrExit, envOrDefault, morgan } from "./src/configs";
-import { authController } from "./src/controllers";
-import { users } from "./src/data/users.json";
-import { UserService } from "./src/services/UserService";
-
-import { ensureValidJWT } from "./src/middleware/ensureValidJWT";
-import createSocketRoutes from "./src/controllers/SocketController";
+import { client, connectOrExit, envOrDefault, morgan } from "@/configs";
+import { authController } from "@/controllers";
+import { users } from "@/data/users.json";
+import { UserService } from "@/services/UserService";
+import { ensureValidJWT } from "@/middleware/ensureValidJWT";
+import createSocketRoutes, {
+  type MessageServer,
+} from "@/controllers/SocketController";
 
 const corsConfig = {
   origin: envOrDefault("CORS_ALLOWED_ORIGINS") as string,
@@ -21,8 +22,7 @@ const corsConfig = {
 const app = express();
 const server = createServer(app);
 
-// todo: type the SocketIO server: https://socket.io/docs/v4/typescript/
-const io = new Server(server, {
+const io: MessageServer = new Server(server, {
   serveClient: false,
   cors: corsConfig,
 });

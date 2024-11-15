@@ -79,6 +79,7 @@ export function useMessages({ manualFetch = false } = {}) {
     setIsLoading,
     isHistoryFullyLoaded,
     clientChatId,
+    handleMessagesHistory,
   ]);
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export function useMessages({ manualFetch = false } = {}) {
       clientChatId.current = uuid();
       socket.emit("messages:fetch", null, handleMessagesHistory);
     }
-  }, [manualFetch, setIsLoading]);
+  }, [manualFetch, setIsLoading, handleMessagesHistory]);
 
   return {
     fetchMessages,
