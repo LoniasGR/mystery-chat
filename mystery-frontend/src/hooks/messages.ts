@@ -14,7 +14,7 @@ export function useSendMessage() {
 
   return useCallback(
     (message: string) => {
-      const newMessage = storeMessage(message, username);
+      const { user, ...newMessage } = storeMessage(message, username);
       socket.emit("messages:send", newMessage);
     },
     [username, storeMessage]
