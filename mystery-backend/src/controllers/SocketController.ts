@@ -3,6 +3,7 @@ import type { Message } from "@/models/Message";
 import MessageRepository from "@/repositories/messageRepository";
 import UserRepository from "@/repositories/userRepository";
 import type { MessageServer } from "@/types/socket";
+import type { BareMessage } from "@/common/types";
 
 type ConnectionInfo = {
   io: Server;
@@ -12,11 +13,14 @@ type ConnectionInfo = {
 
 export default function createSocketRoutes(io: MessageServer) {
   io.on("connection", async (socket) => {
-    const connectedUsername = socket.request.username!;
-    console.log({ x: socket.request.username, d: socket.data });
-    const connectionInfo = { io, socket, connectedUsername };
+    const username = socket.data.username;
+    const connectionInfo = {
+      io,
+      socket,
+      connectedUsername: socket.data.username!,
+    };
 
-    socket.on("messages:send", async (msg) =>
+    socket.on("messages:send", (msg) =>
       handleMessageReceival(connectionInfo, msg)
     );
 
@@ -44,37 +48,44 @@ export default function createSocketRoutes(io: MessageServer) {
       }
     );
 
-    socket.on("typing:start", (username) => {
+    socket.on("typing:start", () => {
       console.log(`${username} is typing...`);
       socket.broadcast.emit("typing:start", username);
     });
 
-    socket.on("typing:stop", (username) => {
+    socket.on("typing:stop", () => {
       console.log(`${username} is not typing...`);
       socket.broadcast.emit("typing:stop", username);
     });
 
     socket.on("disconnect", () => {
-      console.log(`${connectedUsername} disconnected`);
-      io.emit("user:disconnect", connectedUsername);
+      console.log(`${username} disconnected`);
+      io.emit("user:disconnect", username);
     });
   });
 }
 
 async function handleMessageReceival(
   { socket, connectedUsername }: ConnectionInfo,
-  msg: Message
+  msg: BareMessage
 ) {
-  msg.timestamp = new Date().toISOString(); // update the timestamp with the server time of message receival
+  const broadcastedMsg = msg as Message;
+  broadcastedMsg.timestamp = new Date().toISOString(); // update the timestamp with the server time of message receival
 
   // Get avatar of user
-  const user = await UserRepository.findById(msg.user._id);
-  msg.user.avatar = user?.avatar;
+  const user = await UserRepository.findById(connectedUsername);
+
+  if (user) {
+    broadcastedMsg.user = {
+      _id: user._id,
+      avatar: user.avatar,
+    };
+  }
 
   // Store message
-  MessageRepository.create(msg);
-  console.log(`${connectedUsername} sent a message: ${msg.content}`);
-  socket.broadcast.emit("messages:receive", msg);
+  MessageRepository.create(broadcastedMsg);
+  console.log(`${connectedUsername} sent a message: ${broadcastedMsg.content}`);
+  socket.broadcast.emit("messages:receive", broadcastedMsg);
 }
 
 async function listMessages(oldestMessageTimestampString: string | null) {

@@ -62,9 +62,9 @@ export function useUpdateTypingStatus(message: string) {
     }
 
     if (isTyping) {
-      socket.emit("typing:start", username);
+      socket.emit("typing:start");
     } else {
-      socket.emit("typing:stop", username);
+      socket.emit("typing:stop");
     }
   }, [isTyping, username]);
 }

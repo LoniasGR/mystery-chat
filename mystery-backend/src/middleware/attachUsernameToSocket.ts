@@ -5,7 +5,6 @@ export function attachUsernameToSocket(
   socket: MessageSocket,
   next: (err?: ExtendedError) => void
 ) {
-  console.log("ewqewqewq");
   socket.data.username = socket.handshake.query.username as string;
   next();
 }

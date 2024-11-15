@@ -1,7 +1,5 @@
-import type { Message } from "./message";
+import type { BareMessage, Message } from "./message";
 import type { User } from "./user";
-
-// todo: maybe a need to introduce a BareMessage type that doesn't have user field
 
 export type ServerToClientEvents = {
   "user:disconnect": (username: string) => void;
@@ -11,9 +9,9 @@ export type ServerToClientEvents = {
 };
 
 export type ClientToServerEvents = {
-  "typing:start": (username: User["_id"]) => void;
-  "typing:stop": (username: User["_id"]) => void;
-  "messages:send": (message: Message) => void;
+  "typing:start": () => void;
+  "typing:stop": () => void;
+  "messages:send": (message: BareMessage) => void;
   "messages:fetch": (
     oldestMessage: string | null,
     chatId: string,
@@ -22,7 +20,7 @@ export type ClientToServerEvents = {
 };
 
 export type SocketData = {
-  username: User["_id"] | undefined;
+  username: User["_id"];
 };
 
 export type MessageCallbackParams = CallbackParams<Message[]>;

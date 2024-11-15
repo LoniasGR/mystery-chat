@@ -76,7 +76,7 @@ router.post("/refresh", async (req, res) => {
   res.status(200).json({});
 });
 
-router.get("/user", ensureValidJWT, async (req: express.Request, res) => {
+router.get("/user", ensureValidJWT, async (req, res) => {
   const data = await UserRepository.findById(req.username!);
   if (data === null) {
     handleUnexpected(res);
