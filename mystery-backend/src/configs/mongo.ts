@@ -1,10 +1,10 @@
 import { envOrDefault } from "@/configs/env";
 import { MongoClient } from "mongodb";
 
-const username = envOrDefault<string>("MONGO_USERNAME");
-const password = envOrDefault<string>("MONGO_PASSWORD");
-const port = envOrDefault<number>("MONGO_PORT");
-const host = envOrDefault<string>("MONGO_HOST");
+const username = envOrDefault<string>("MONGO_USERNAME", "");
+const password = envOrDefault<string>("MONGO_PASSWORD", "");
+const port = envOrDefault<number>("MONGO_PORT", 27017);
+const host = envOrDefault<string>("MONGO_HOST", "localhost");
 const dbName = envOrDefault<string>("MONGO_DATABASE");
 const connectionString = envOrDefault<string>(
   "MONGO_CONNECTION_URL",
