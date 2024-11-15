@@ -8,15 +8,17 @@ async function findByTimestamp(id: Date) {
 }
 
 async function findManyOlderThan(time: Date, limit?: number) {
-  return collection
+  const messages = await collection
     .find({
       timestamp: {
         $lt: time.toISOString(),
       },
     })
-    .sort({ timestamp: 1 })
+    .sort({ timestamp: -1 })
     .limit(limit ?? 20)
     .toArray();
+
+  return messages.reverse();
 }
 
 async function create(item: Message) {
