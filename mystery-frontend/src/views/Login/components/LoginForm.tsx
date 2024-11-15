@@ -58,6 +58,7 @@ const LoginTitle = memo(
         <video
           src={gatsbyVideo}
           ref={videoRef}
+          playsInline
           className="rounded-lg w-20 h-20"
         />
       </div>
