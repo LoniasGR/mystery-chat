@@ -1,23 +1,27 @@
 import { Server, Socket } from "socket.io";
-import type { Message } from "@/models/Message";
 import MessageRepository from "@/repositories/messageRepository";
 import UserRepository from "@/repositories/userRepository";
-import type { MessageServer } from "@/types/socket";
 import type { BareMessage } from "@/common/types";
+import type { MessageServer } from "@/types/socket";
+import type { User } from "@/models/User";
+import type { Message } from "@/models/Message";
 
 type ConnectionInfo = {
   io: Server;
   socket: Socket;
   connectedUsername: string;
+  userDetails: Promise<User | null>;
 };
 
 export default function createSocketRoutes(io: MessageServer) {
   io.on("connection", async (socket) => {
     const username = socket.data.username;
+    const userDetails = UserRepository.findById(socket.data.username);
     const connectionInfo = {
       io,
       socket,
-      connectedUsername: socket.data.username!,
+      connectedUsername: username,
+      userDetails,
     };
 
     socket.on("messages:send", (msg) =>
@@ -66,14 +70,14 @@ export default function createSocketRoutes(io: MessageServer) {
 }
 
 async function handleMessageReceival(
-  { socket, connectedUsername }: ConnectionInfo,
+  { socket, connectedUsername, userDetails }: ConnectionInfo,
   msg: BareMessage
 ) {
   const broadcastedMsg = msg as Message;
   broadcastedMsg.timestamp = new Date().toISOString(); // update the timestamp with the server time of message receival
 
   // Get avatar of user
-  const user = await UserRepository.findById(connectedUsername);
+  const user = await userDetails;
 
   if (user) {
     broadcastedMsg.user = {

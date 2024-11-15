@@ -1,18 +1,7 @@
 import { atom } from "jotai";
-import { type UUID } from "crypto";
+import { v4 as uuid } from "uuid";
 
 import type { Message } from "@/common/types";
-
-// todo: change this to a browser-compatible UUID library
-function randomUUID(): UUID {
-  if (window.isSecureContext) {
-    return crypto.randomUUID();
-  }
-
-  // Should never be seen in production
-  const dater = new Date().toISOString();
-  return `1-2-3-4-${dater}`;
-}
 
 export const messagesAtom = atom<Message[]>([]);
 export const typingUsersAtom = atom<Set<string>>(new Set<string>());
@@ -21,7 +10,7 @@ export const storeNewMessageAtom = atom(
   null,
   (_get, set, content: string, username: string) => {
     const newMessage: Message = {
-      _id: randomUUID(),
+      _id: uuid(),
       timestamp: new Date().toISOString(),
       content,
       user: {
