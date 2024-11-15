@@ -10,6 +10,7 @@ COPY mystery-frontend/bun.lockb .
 
 RUN bun install --frozen-lockfile
 
+COPY ./common/ ../common/
 COPY ./mystery-frontend/ ./
 
 RUN bun run build
@@ -24,7 +25,8 @@ COPY mystery-backend/package.json ./
 COPY mystery-backend/bun.lockb ./
 RUN bun install --frozen-lockfile --production
 
-COPY mystery-backend/ .
+COPY ./common/ ../common/
+COPY mystery-backend/ ./
 COPY --from=frontend-builder /usr/src/app/frontend/dist /usr/src/mystery-frontend/dist
 
 CMD ["bun", "run", "prod"]
