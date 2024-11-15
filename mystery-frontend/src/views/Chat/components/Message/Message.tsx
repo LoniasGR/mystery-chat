@@ -4,12 +4,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUsername } from "@/hooks/auth";
 import { MessageMeta, MessageContent } from "./components";
 
-import type { Message as MessageType } from "@/types";
+import type { Message as MessageType } from "@/common/types";
 
 const Message: MessageComponent = ({ content, user, timestamp }) => {
   const currentUser = useUsername();
-  const { nickname, avatar } = user;
-  const isYou = nickname === currentUser;
+  const { _id, avatar } = user;
+  const isYou = _id === currentUser;
 
   return (
     <div
@@ -17,11 +17,9 @@ const Message: MessageComponent = ({ content, user, timestamp }) => {
         isYou ? "self-end ml-8" : "self-start mr-8"
       }`}
     >
-      {!isYou && (
-        <UserAvatar name={nickname} src={avatar} className="h-8 w-8" />
-      )}
+      {!isYou && <UserAvatar name={_id} src={avatar} className="h-8 w-8" />}
       <div className="flex flex-col gap-1 w-full">
-        <MessageMeta timestamp={timestamp} name={nickname} isYou={isYou} />
+        <MessageMeta timestamp={timestamp} name={_id} isYou={isYou} />
         <MessageContent message={content} isYou={isYou} />
       </div>
     </div>

@@ -1,7 +1,9 @@
 import { Server, Socket } from "socket.io";
-import type { Message } from "../models/Message";
-import MessageRepository from "../repositories/messageRepository";
-import UserRepository from "../repositories/userRepository";
+import type { Message } from "@/models/Message";
+import MessageRepository from "@/repositories/messageRepository";
+import UserRepository from "@/repositories/userRepository";
+
+import type { MessageCallbackParams } from "@/common/types";
 
 type ConnectionInfo = {
   io: Server;
@@ -14,17 +16,11 @@ interface serverToClientEvents {
   "messages:send": (msg: Message) => void;
   "messages:fetch": (
     oldestMessageTimestamp: string | undefined,
-    callback: (data: callbackParams) => void
+    callback: (data: MessageCallbackParams) => void
   ) => void;
   "typing:start": (username: string) => void;
   "typing:stop": (username: string) => void;
 }
-
-type callbackParams = {
-  status: "OK" | "ERROR";
-  error?: unknown;
-  messages?: Message[];
-};
 
 export default function createSocketRoutes(io: Server) {
   io.on("connection", async (socket: Socket) => {
@@ -41,13 +37,13 @@ export default function createSocketRoutes(io: Server) {
       "messages:fetch",
       async (
         oldestMessageTimestamp: string | undefined,
-        callback: (data: callbackParams) => void
+        callback: (data: MessageCallbackParams) => void
       ) => {
         try {
           const messages = await listMessages(oldestMessageTimestamp);
           callback({
             status: "OK",
-            messages: messages,
+            data: messages,
           });
         } catch (err) {
           callback({
@@ -88,7 +84,7 @@ async function handleMessageReceival(
   _msg.timestamp = new Date().toISOString(); // update the timestamp with the server time of message receival
 
   // Get avatar of user
-  const user = await UserRepository.findById(_msg.user.nickname);
+  const user = await UserRepository.findById(_msg.user._id);
   _msg.user.avatar = user?.avatar;
 
   // Store message

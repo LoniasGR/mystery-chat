@@ -1,5 +1,5 @@
-import { User } from "../models/User";
-import UserRepository from "../repositories/userRepository";
+import type { User } from "@/models/User";
+import UserRepository from "@/repositories/userRepository";
 
 export class UserService {
   static async createUsers(users: User[]) {

@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { secrets } from "../configs";
-import { verifyJwt } from "../utils/jwtUtils";
+import { secrets } from "@/configs";
+import { verifyJwt } from "@/utils/jwtUtils";
 import {
   handleExpired,
   handleForbidden,
   handleUnauthorized,
-} from "../utils/controllerUtils";
+} from "@/utils/controllerUtils";
 
 export async function ensureValidJWT(
   req: Request,

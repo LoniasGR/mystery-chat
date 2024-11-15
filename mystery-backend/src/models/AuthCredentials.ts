@@ -1,4 +1,1 @@
-export interface AuthCredentials {
-  username: string;
-  password: string;
-}
+export type { AuthCredentials } from "@/common/types";

@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { secrets } from "../configs";
+import { secrets } from "@/configs";
 import secs from "./secs";
 import http from "http";
 

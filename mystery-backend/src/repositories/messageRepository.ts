@@ -1,5 +1,5 @@
-import { db } from "../configs";
-import { Message } from "../models/Message";
+import { db } from "@/configs";
+import type { Message } from "@/models/Message";
 
 const collection = db.collection<Message>("messages");
 

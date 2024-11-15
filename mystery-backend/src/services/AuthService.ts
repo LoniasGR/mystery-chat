@@ -1,10 +1,10 @@
 import * as jose from "jose";
-import secrets from "../configs/secrets";
-import { ValidationError } from "../errors/ValidationError";
-import RefreshTokenRepository from "../repositories/refreshTokenRepository";
-import UserRepository from "../repositories/userRepository";
-import secs from "../utils/secs";
-import { TokenMissmatchError } from "../errors/TokenMissmatchError";
+import secrets from "@/configs/secrets";
+import { ValidationError } from "@/errors/ValidationError";
+import RefreshTokenRepository from "@/repositories/refreshTokenRepository";
+import UserRepository from "@/repositories/userRepository";
+import secs from "@/utils/secs";
+import { TokenMissmatchError } from "@/errors/TokenMissmatchError";
 
 async function login(username: string, passphrase: string) {
   const user = await UserRepository.findById(username);

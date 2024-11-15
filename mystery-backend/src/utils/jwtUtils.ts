@@ -1,5 +1,5 @@
 import * as jose from "jose";
-import { secrets } from "../configs";
+import { secrets } from "@/configs";
 
 export async function verifyJwt(
   jwt: string,

@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { type UUID } from "crypto";
 
-import type { Message } from "@/types";
+import type { Message } from "@/common/types";
 
 // todo: change this to a browser-compatible UUID library
 function randomUUID(): UUID {
@@ -25,7 +25,7 @@ export const storeNewMessageAtom = atom(
       timestamp: new Date().toISOString(),
       content,
       user: {
-        nickname: username,
+        _id: username,
       },
     };
 

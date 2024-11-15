@@ -1,5 +1,5 @@
-import { db } from "../configs";
-import { RefreshToken } from "../models/RefreshTokens";
+import { db } from "@/configs";
+import type { RefreshToken } from "@/models/RefreshTokens";
 
 const collection = db.collection<RefreshToken>("refresh-tokens");
 

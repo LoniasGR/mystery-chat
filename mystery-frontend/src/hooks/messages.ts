@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSetAtom, useAtom } from "jotai";
 import { v4 as uuid } from "uuid";
 import { messagesAtom, storeNewMessageAtom } from "@/atoms/chat";
-import socket, { callbackParams } from "@/lib/socket";
+import socket from "@/lib/socket";
 import { useUsername } from "./auth";
-import type { Message } from "@/types";
+import type { Message, MessageCallbackParams } from "@/common/types";
 
 export function useSendMessage() {
   const username = useUsername();
@@ -29,20 +29,23 @@ export function useMessages({ manualFetch = false } = {}) {
 
   const oldestMessageTimestamp = messages.at(0)?.timestamp; // todo: id or timestamp?
 
-  function handleMessagesHistory(data: callbackParams) {
-    if (data.error) {
-      console.log(data.error);
-      return;
-    }
-    const messages = data.messages!;
+  const handleMessagesHistory = useCallback(
+    (data: MessageCallbackParams) => {
+      if (data.status === "ERROR") {
+        console.log(data.error); // todo: error handling
+        return;
+      }
+      const messages = data.data;
 
-    if (messages.length > 0) {
-      setMessages((prev) => [...messages, ...prev]);
-    } else {
-      setIsHistoryFullyLoaded(true);
-    }
-    setIsLoading(false);
-  }
+      if (messages.length > 0) {
+        setMessages((prev) => [...messages, ...prev]);
+      } else {
+        setIsHistoryFullyLoaded(true);
+      }
+      setIsLoading(false);
+    },
+    [setMessages, setIsLoading, setIsHistoryFullyLoaded]
+  );
 
   useEffect(() => {
     function handleMessageReceival(message: Message) {

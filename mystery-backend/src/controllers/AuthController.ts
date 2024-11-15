@@ -1,18 +1,18 @@
 import express from "express";
-import { secrets } from "../configs";
-import { ValidationError } from "../errors/ValidationError";
-import { ensureValidJWT } from "../middleware/ensureValidJWT";
-import { AuthCredentials } from "../models/AuthCredentials";
-import UserRepository from "../repositories/userRepository";
-import AuthService from "../services/AuthService";
+import { secrets } from "@/configs";
+import { ValidationError } from "@/errors/ValidationError";
+import { ensureValidJWT } from "@/middleware/ensureValidJWT";
+import type { AuthCredentials } from "@/models/AuthCredentials";
+import UserRepository from "@/repositories/userRepository";
+import AuthService from "@/services/AuthService";
 import {
   addAuthCookies,
   handleAlreadyAuthorized,
   handleExpired,
   handleUnauthorized,
   handleUnexpected,
-} from "../utils/controllerUtils";
-import { verifyJwt } from "../utils/jwtUtils";
+} from "@/utils/controllerUtils";
+import { verifyJwt } from "@/utils/jwtUtils";
 
 const router = express.Router();
 

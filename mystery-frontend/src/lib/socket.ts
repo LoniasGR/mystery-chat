@@ -2,13 +2,7 @@ import { io, type Socket } from "socket.io-client";
 
 import { API_BASE_URL } from "./constants";
 
-import type { Message } from "@/types";
-
-export type callbackParams = {
-  status: "OK" | "ERROR";
-  error?: unknown;
-  messages?: Message[];
-};
+import type { Message, MessageCallbackParams } from "@/common/types";
 
 // todo: reuse type also on BE and here not inline type - also this has all the events, should be split into client, server and common events
 const socket: Socket<{
@@ -20,7 +14,7 @@ const socket: Socket<{
   "messages:receive": (message: Message) => void;
   "messages:fetch": (
     oldestMessage: string | null, // todo: timestamp or ID?
-    callback: (data: callbackParams) => void
+    callback: (data: MessageCallbackParams) => void
   ) => Promise<Message[]>;
   "messages:history": (messages: Message[], chatId?: string) => void;
 }> = io(API_BASE_URL, { autoConnect: false, withCredentials: true });

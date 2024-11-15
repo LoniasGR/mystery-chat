@@ -1,5 +1,5 @@
-import { User } from "../models/User";
-import { db } from "../configs";
+import type { User } from "@/models/User";
+import { db } from "@/configs";
 
 const collection = db.collection<User>("users");
 
