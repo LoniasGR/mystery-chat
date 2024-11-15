@@ -6,7 +6,6 @@ import path from "path";
 import { Server } from "socket.io";
 import { client, connectOrExit, envOrDefault, morgan } from "@/configs";
 import { authController } from "@/controllers";
-import { users } from "@/data/users.json";
 import { UserService } from "@/services/UserService";
 import { ensureValidJWT } from "@/middleware/ensureValidJWT";
 import { attachUsernameToSocket } from "@/middleware/attachUsernameToSocket";
@@ -48,8 +47,10 @@ await connectOrExit(client);
 await client.connect();
 
 // Run any startup code
-await UserService.createUsers(users);
-
+const file = Bun.file("@/data/users.json");
+if (await file.exists()) {
+  await UserService.createUsers(await file.json());
+}
 // Set up HTTP endpoints
 app.use("/auth", authController);
 
