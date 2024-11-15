@@ -6,6 +6,8 @@ import {
   type AvatarProps,
 } from "@/components/ui/avatar";
 
+const AVATARS_DIRECTORY = "/avatars";
+
 const UserAvatar: React.FC<Props> = ({ name, src, ...props }) => {
   const fallback = useMemo(
     () =>
@@ -18,7 +20,7 @@ const UserAvatar: React.FC<Props> = ({ name, src, ...props }) => {
 
   return (
     <Avatar {...props}>
-      <AvatarImage src={src} />
+      <AvatarImage src={`${AVATARS_DIRECTORY}${src}`} />
       <AvatarFallback>{fallback}</AvatarFallback>
     </Avatar>
   );
