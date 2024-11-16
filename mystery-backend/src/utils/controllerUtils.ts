@@ -24,6 +24,19 @@ function addAuthCookies(res: Response, cookies: AuthCookies) {
     });
 }
 
+function handleWrongCredentials(res: http.ServerResponse, details?: string) {
+  res.statusCode = 401;
+  res.setHeader("Content-Type", "application/json");
+
+  return res.end(
+    JSON.stringify({
+      error:
+        "Do you actually know the way to enter, or are you just playing smart?",
+      details,
+    })
+  );
+}
+
 function handleUnauthorized(res: http.ServerResponse, details?: string) {
   res.statusCode = 401;
   res.setHeader("Content-Type", "application/json");
@@ -90,5 +103,6 @@ export {
   handleExpired,
   handleForbidden,
   handleUnauthorized,
+  handleWrongCredentials,
   handleUnexpected,
 };
