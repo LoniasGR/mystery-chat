@@ -1,12 +1,11 @@
+import socket from "@/lib/socket";
 import {
   type InternalAxiosRequestConfig,
   AxiosError,
   isAxiosError,
 } from "axios";
-import client from "./client";
-import socket from "@/lib/socket";
-import { useLogoutMutation } from "@/hooks/auth";
 import { logout } from "./auth";
+import client from "./client";
 
 let isRefreshing = false;
 let retryQueue: {
@@ -89,6 +88,8 @@ socket.on("connect_error", (error) => {
     .catch((err) => {
       console.log(err);
       logout();
+      localStorage.clear();
       socket.close();
+      location.reload();
     });
 });
