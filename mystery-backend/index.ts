@@ -1,16 +1,17 @@
+import { client, connectOrExit, envOrDefault, morgan } from "@/configs";
+import { authController } from "@/controllers";
+import createSocketRoutes from "@/controllers/SocketController";
+import { attachUsernameToSocket } from "@/middleware/attachUsernameToSocket";
+import { ensureValidJWT } from "@/middleware/ensureValidJWT";
+import { User } from "@/models/User";
+import { UserService } from "@/services/UserService";
+import type { MessageServer } from "@/types/socket";
 import cookieParser from "cookie-parser";
-import express from "express";
 import cors from "cors";
+import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { Server } from "socket.io";
-import { client, connectOrExit, envOrDefault, morgan } from "@/configs";
-import { authController } from "@/controllers";
-import { UserService } from "@/services/UserService";
-import { ensureValidJWT } from "@/middleware/ensureValidJWT";
-import { attachUsernameToSocket } from "@/middleware/attachUsernameToSocket";
-import createSocketRoutes from "@/controllers/SocketController";
-import type { MessageServer } from "@/types/socket";
 
 const corsConfig = {
   origin: envOrDefault<string>("CORS_ALLOWED_ORIGINS"),
@@ -47,9 +48,10 @@ await connectOrExit(client);
 await client.connect();
 
 // Run any startup code
-const file = Bun.file("@/data/users.json");
+const file = Bun.file("./src/data/users.json");
 if (await file.exists()) {
-  await UserService.createUsers(await file.json());
+  const data = (await file.json()) as { users: User[] };
+  await UserService.createUsers(data.users);
 }
 // Set up HTTP endpoints
 app.use("/auth", authController);

@@ -1,5 +1,5 @@
-import express from "express";
 import { secrets } from "@/configs";
+import { TokenMissmatchError } from "@/errors/TokenMissmatchError";
 import { ValidationError } from "@/errors/ValidationError";
 import { ensureValidJWT } from "@/middleware/ensureValidJWT";
 import type { AuthCredentials } from "@/models/AuthCredentials";
@@ -13,6 +13,7 @@ import {
   handleUnexpected,
 } from "@/utils/controllerUtils";
 import { verifyJwt } from "@/utils/jwtUtils";
+import express from "express";
 
 const router = express.Router();
 
@@ -44,11 +45,11 @@ router.post("/login", async (req, res) => {
     res.status(200).json({ username: body.username });
   } catch (e) {
     if (e instanceof ValidationError) {
-      res.status(401).json({ error: e.message });
+      handleUnauthorized(res, e.message);
     } else if (e instanceof Error) {
-      res.status(500).json({ error: e.message });
+      handleUnexpected(res, e.message);
     } else {
-      res.status(500).json({ error: String(e) });
+      handleUnexpected(res, String(e));
     }
   }
 });
@@ -70,10 +71,19 @@ router.post("/refresh", async (req, res) => {
     handleUnauthorized(res);
     return;
   }
-  const cookies = await AuthService.refresh(oldRefreshToken);
-
-  addAuthCookies(res, cookies);
-  res.status(200).json({});
+  try {
+    const cookies = await AuthService.refresh(oldRefreshToken);
+    addAuthCookies(res, cookies);
+    res.status(200).json({});
+  } catch (err) {
+    if (err instanceof TokenMissmatchError) {
+      handleUnauthorized(res);
+    } else if (err instanceof Error) {
+      handleUnexpected(res, err.message);
+    } else {
+      handleUnexpected(res, String(err));
+    }
+  }
 });
 
 router.get("/user", ensureValidJWT, async (req, res) => {
