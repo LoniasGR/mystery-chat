@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const MessageContent: MessageContentComponent = ({ message, isYou }) => {
+  console.log(message);
   return (
     <div
       className={`py-2 px-3 rounded-lg ${
@@ -10,7 +11,7 @@ const MessageContent: MessageContentComponent = ({ message, isYou }) => {
           : "bg-muted self-start"
       }`}
     >
-      <div className="break-words">{message}</div>
+      <div className="break-words whitespace-pre-line">{message}</div>
     </div>
   );
 };
