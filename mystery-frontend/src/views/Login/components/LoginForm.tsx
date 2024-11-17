@@ -19,6 +19,7 @@ import { useLoginMutation } from "@/hooks/auth";
 import { formatError } from "@/lib/errors";
 
 import gatsbyVideo from "@/assets/gatsby.mp4";
+import gatsbyPoster from "@/assets/gatsbyPoster.webp";
 
 const LoginTitle = memo(
   forwardRef(function LoginTitle(_props, ref) {
@@ -63,6 +64,7 @@ const LoginTitle = memo(
           preload="auto"
           controls={false}
           className="rounded-lg w-20 h-20"
+          poster={gatsbyPoster}
         />
       </div>
     );
