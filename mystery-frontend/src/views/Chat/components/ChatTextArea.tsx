@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useUpdateTypingStatus } from "@/hooks/chat";
 import { useSendMessage } from "@/hooks/messages";
 
+const isMobile = window.innerWidth <= 768;
+
 function ChatTextArea() {
   const [message, setMessage] = useState<string>("");
   useUpdateTypingStatus(message);
@@ -16,16 +18,17 @@ function ChatTextArea() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !isMobile) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
   const handleSendMessage = () => {
-    if (message.trim()) {
+    const trimmedMessage = message.trim();
+    if (trimmedMessage) {
       // todo: block real names in BE? or is it too much
-      sendMessage(message);
+      sendMessage(trimmedMessage);
       setMessage("");
     }
   };
