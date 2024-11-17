@@ -33,21 +33,23 @@ function ChatTextArea() {
   return (
     <div className="flex flex-col w-full gap-1.5 p-4 bg-popover">
       <div className="relative">
-        {/* TODO: instead of resizable textarea, make an auto resize (on enter) */}
         <Textarea
           placeholder="Type your message here."
-          className="max-h-[150px] bg-input"
+          className="bg-input resize-none pr-10 sm:pr-[42px]"
           value={message}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          autoSize
+          minRows={1}
+          maxRows={6}
         />
         <Button
-          size="icon"
-          className="absolute bottom-3 right-2"
+          size="miniIcon"
+          className="absolute bottom-2 right-2 sm:bottom-[7px] sm:right-[7px]"
           disabled={!message.trim()}
           onClick={handleSendMessage}
         >
-          <PaperPlaneIcon className="h-4 w-4" />
+          <PaperPlaneIcon />
         </Button>
       </div>
       <WarningMessage />
