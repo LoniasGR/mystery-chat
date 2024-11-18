@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSetAtom, useAtom } from "jotai";
+import { useSetAtom, useAtom, useAtomValue } from "jotai";
 import { v4 as uuid } from "uuid";
 import { messagesAtom, storeNewMessageAtom } from "@/atoms/chat";
+import { isMutedAtom } from "@/atoms/notifications";
 import socket from "@/lib/socket";
 import { formatError } from "@/lib/errors";
 import { toast } from "./toast";
 import { useUsername } from "./auth";
 import type { Message, MessageCallbackParams } from "@/common/types";
+
+import notificationSound from "@/assets/notification.aac";
+const notificationAudio = new Audio(notificationSound);
 
 export function useSendMessage() {
   const username = useUsername();
@@ -24,6 +28,8 @@ export function useSendMessage() {
 // FUTURE: In case of an implementation of multiple chats, this hook could be refactored into atoms
 // This probably could be refactored a tiny bit to allow using this hook from many places without messing up the Messages state but is good enough for our use case
 export function useMessages({ manualFetch = false } = {}) {
+  const isMuted = useAtomValue(isMutedAtom);
+
   const clientChatId = useRef<string | null>(null); // keeping integrity of the messages due to StrictMode re-rendering and emitting messages twice
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +66,9 @@ export function useMessages({ manualFetch = false } = {}) {
   useEffect(() => {
     function handleMessageReceival(message: Message) {
       setMessages((prev) => [...prev, message]);
+      if (!isMuted) {
+        notificationAudio.play();
+      }
     }
 
     socket.on("messages:receive", handleMessageReceival);
@@ -67,7 +76,7 @@ export function useMessages({ manualFetch = false } = {}) {
     return () => {
       socket.off("messages:receive", handleMessageReceival);
     };
-  }, [setIsLoading, setMessages, setIsHistoryFullyLoaded]);
+  }, [setIsLoading, setMessages, setIsHistoryFullyLoaded, isMuted]);
 
   const fetchMessages = useCallback(() => {
     if (isHistoryFullyLoaded) {
