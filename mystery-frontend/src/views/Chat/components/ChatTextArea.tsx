@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useUpdateTypingStatus } from "@/hooks/chat";
 import { useSendMessage } from "@/hooks/messages";
 
+const isMobile = window.innerWidth <= 768;
+
 function ChatTextArea() {
   const [message, setMessage] = useState<string>("");
   useUpdateTypingStatus(message);
@@ -16,16 +18,17 @@ function ChatTextArea() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !isMobile) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
   const handleSendMessage = () => {
-    if (message.trim()) {
+    const trimmedMessage = message.trim();
+    if (trimmedMessage) {
       // todo: block real names in BE? or is it too much
-      sendMessage(message);
+      sendMessage(trimmedMessage);
       setMessage("");
     }
   };
@@ -33,21 +36,23 @@ function ChatTextArea() {
   return (
     <div className="flex flex-col w-full gap-1.5 p-4 bg-popover">
       <div className="relative">
-        {/* TODO: instead of resizable textarea, make an auto resize (on enter) */}
         <Textarea
           placeholder="Type your message here."
-          className="max-h-[150px] bg-input"
+          className="bg-input resize-none pr-10 sm:pr-[42px]"
           value={message}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          autoSize
+          minRows={1}
+          maxRows={6}
         />
         <Button
-          size="icon"
-          className="absolute bottom-3 right-2"
+          size="miniIcon"
+          className="absolute bottom-2 right-2 sm:bottom-[7px] sm:right-[7px]"
           disabled={!message.trim()}
           onClick={handleSendMessage}
         >
-          <PaperPlaneIcon className="h-4 w-4" />
+          <PaperPlaneIcon />
         </Button>
       </div>
       <WarningMessage />
@@ -57,7 +62,7 @@ function ChatTextArea() {
 
 function WarningMessage() {
   return (
-    <p className="mx-2 text-sm text-muted-foreground">
+    <p className="mx-0 sm:mx-2 text-xs sm:text-sm text-muted-foreground">
       Remember that you are <strong>forbidden</strong> from revealing your
       identity or making any hints towards who you are.
     </p>
