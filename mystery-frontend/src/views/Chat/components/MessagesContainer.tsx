@@ -27,7 +27,7 @@ function MessagesContainer() {
   return (
     <div className="flex-1 overflow-hidden relative flex flex-col">
       <div
-        className="p-4 flex flex-col gap-4 overflow-auto h-full"
+        className="p-4 flex flex-col gap-4 overflow-auto h-full transform-gpu"
         ref={chatContainerCallbackRef}
         onScroll={onContainerScroll}
       >
