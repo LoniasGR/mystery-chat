@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const MessageContent: MessageContentComponent = ({ message, isYou }) => {
-  console.log(message);
   return (
     <div
       className={`py-2 px-3 rounded-lg ${

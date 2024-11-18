@@ -62,7 +62,7 @@ function ChatTextArea() {
 
 function WarningMessage() {
   return (
-    <p className="mx-2 text-sm text-muted-foreground">
+    <p className="mx-0 sm:mx-2 text-xs sm:text-sm text-muted-foreground">
       Remember that you are <strong>forbidden</strong> from revealing your
       identity or making any hints towards who you are.
     </p>
