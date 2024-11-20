@@ -22,14 +22,14 @@ export function useSendMessage() {
 }
 
 // FUTURE: In case of an implementation of multiple chats, this hook could be refactored into atoms
-// TODO: this probably could be refactored a tiny bit to allow using this hook from many places without messing up the Messages state but is good enough for now
+// This probably could be refactored a tiny bit to allow using this hook from many places without messing up the Messages state but is good enough for our use case
 export function useMessages({ manualFetch = false } = {}) {
   const clientChatId = useRef<string | null>(null); // keeping integrity of the messages due to StrictMode re-rendering and emitting messages twice
   const [messages, setMessages] = useAtom(messagesAtom);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryFullyLoaded, setIsHistoryFullyLoaded] = useState(false);
 
-  const oldestMessageTimestamp = messages.at(0)?.timestamp; // todo: id or timestamp?
+  const oldestMessageTimestamp = messages.at(0)?.timestamp;
 
   const handleMessagesHistory = useCallback(
     (data: MessageCallbackParams, chatId?: string) => {

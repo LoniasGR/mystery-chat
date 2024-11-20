@@ -1,27 +1,13 @@
-import { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useLayoutEffect } from "react";
 import { useAtomValue } from "jotai";
 import { typingUsersAtom } from "@/atoms/chat";
 
-export default function TypingIndicators() {
-  const typingUsers = useTypingUsers();
-
-  if (!typingUsers) {
-    return null;
-  }
-
-  // todo: styling
-  return (
-    <div className="text-xs text-gray-500">
-      {typingUsers}
-      <Dots />
-    </div>
-  );
-}
-
-function useTypingUsers() {
+const TypingIndicators: React.FC<{ onChange?: () => void }> = ({
+  onChange,
+}) => {
   const typingUsersSet = useAtomValue(typingUsersAtom);
 
-  return useMemo(() => {
+  const typingUsers = useMemo(() => {
     const setSize = typingUsersSet.size;
 
     if (setSize === 0) {
@@ -32,7 +18,24 @@ function useTypingUsers() {
       setSize > 1 ? "are" : "is"
     } typing`;
   }, [typingUsersSet]);
-}
+
+  const areUsersTyping = typingUsersSet.size > 0;
+
+  useLayoutEffect(() => {
+    onChange?.();
+  }, [areUsersTyping, onChange]);
+
+  if (!typingUsers) {
+    return null;
+  }
+
+  return (
+    <div className="text-xs text-gray-500">
+      {typingUsers}
+      <Dots />
+    </div>
+  );
+};
 
 function Dots() {
   const [dots, setDots] = useState("");
@@ -47,3 +50,5 @@ function Dots() {
 
   return dots;
 }
+
+export default TypingIndicators;

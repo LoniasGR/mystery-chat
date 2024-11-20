@@ -10,7 +10,7 @@ const MessageContent: MessageContentComponent = ({ message, isYou }) => {
           : "bg-muted self-start"
       }`}
     >
-      <div className="break-words">{message}</div>
+      <div className="break-words whitespace-pre-line">{message}</div>
     </div>
   );
 };
