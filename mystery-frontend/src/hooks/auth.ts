@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAtomValue, useSetAtom } from "jotai";
+import { getDefaultStore, useAtomValue, useSetAtom } from "jotai";
 import { isAxiosError } from "axios";
 
 import { isLoggedInAtom, usernameAtom } from "@/atoms/auth";
@@ -9,7 +9,7 @@ import { useToast } from "./toast";
 
 export function useLoginMutation(beforeOnSuccess?: () => void | Promise<void>) {
   const { toast } = useToast();
-  const setUsername = useSetAtom(usernameAtom);
+  const setUsername = useSetAtom(usernameAtom, { store: getDefaultStore() });
   return useMutation({
     mutationFn: login,
     onSuccess: async ({ data }) => {
@@ -38,7 +38,7 @@ export function useLoginMutation(beforeOnSuccess?: () => void | Promise<void>) {
 }
 
 export function useLogoutMutation() {
-  const setUsername = useSetAtom(usernameAtom);
+  const setUsername = useSetAtom(usernameAtom, { store: getDefaultStore() });
   return useMutation({
     mutationFn: logout,
     onSuccess: () => setUsername(null),
@@ -46,9 +46,9 @@ export function useLogoutMutation() {
 }
 
 export function useIsLoggedIn() {
-  return useAtomValue(isLoggedInAtom);
+  return useAtomValue(isLoggedInAtom, { store: getDefaultStore() });
 }
 
 export function useUsername() {
-  return useAtomValue(usernameAtom)!;
+  return useAtomValue(usernameAtom, { store: getDefaultStore() })!;
 }

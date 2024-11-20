@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
-import { useSetAtom } from "jotai";
+import { getDefaultStore, useSetAtom } from "jotai";
 import { resetUsernameAtom } from "@/atoms/auth";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -29,7 +29,9 @@ function Root() {
 }
 
 function MiddlewareHandler({ children }: { children: React.ReactNode }) {
-  const resetUsername = useSetAtom(resetUsernameAtom);
+  const resetUsername = useSetAtom(resetUsernameAtom, {
+    store: getDefaultStore(),
+  });
 
   useEffect(() => {
     const middlewareId = handleAxiosUnauthorized(resetUsername);

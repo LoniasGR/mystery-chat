@@ -21,7 +21,7 @@ export function useSendMessage() {
   );
 }
 
-// FUTURE: In case of an implementation of multiple chats, this hook should be refactored into atoms, and each chat should come with its own jotai Provider
+// FUTURE: In case of an implementation of multiple chats, this hook could be refactored into atoms
 // TODO: this probably could be refactored a tiny bit to allow using this hook from many places without messing up the Messages state but is good enough for now
 export function useMessages({ manualFetch = false } = {}) {
   const clientChatId = useRef<string | null>(null); // keeping integrity of the messages due to StrictMode re-rendering and emitting messages twice
