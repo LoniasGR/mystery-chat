@@ -36,7 +36,6 @@ function MiddlewareHandler({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const middlewareId = handleAxiosUnauthorized(resetUsername);
     const eventHandlerRef = handleSocketAuthErrors(resetUsername);
-    // TODO: Probably a need to clear messages as well. Instead of clearing messages, handle it via jotai provider
 
     return () => {
       clearSocketMiddleware(eventHandlerRef);
