@@ -4,6 +4,8 @@ import {
   AxiosError,
   isAxiosError,
 } from "axios";
+import { toast } from "@/hooks/toast";
+import { formatError } from "@/lib/errors";
 import client from "./client";
 import { logout } from "./auth";
 
@@ -73,18 +75,37 @@ client.interceptors.response.use(
 
 // docs: https://socket.io/docs/v4/troubleshooting-connection-issues/#troubleshooting-steps
 export const handleSocketAuthErrors = (onUnauthorized: () => void) => {
-  async function errorHandler() {
-    try {
-      await refreshToken();
-
-      if (!socket.active) {
-        socket.connect();
-      }
-    } catch {
+  async function errorHandler(error: Error) {
+    const terminateSocket = () => {
       logout();
       socket.close();
       onUnauthorized();
+    };
+
+    const _error = error as SocketError;
+
+    if (_error.description === 403) {
+      try {
+        await refreshToken();
+
+        if (!socket.active) {
+          socket.connect();
+        }
+      } catch {
+        return terminateSocket();
+      }
     }
+
+    if (_error.description === 401) {
+      return terminateSocket();
+    }
+
+    toast({
+      title: "An unknown error occurred!",
+      description: formatError(error),
+      duration: 5000,
+    });
+    return terminateSocket();
   }
 
   socket.on("connect_error", errorHandler);
@@ -115,3 +136,5 @@ export const clearAxiosMiddleware = (middlewareId: number) =>
 
 export const clearSocketMiddleware = (handlerRef: (error: Error) => void) =>
   socket.off("connect_error", handlerRef);
+
+type SocketError = Error & { description?: number };
