@@ -89,7 +89,6 @@ export function useMessages({ manualFetch = false } = {}) {
     oldestMessageTimestamp,
     setIsLoading,
     isHistoryFullyLoaded,
-    clientChatId,
     handleMessagesHistory,
   ]);
 

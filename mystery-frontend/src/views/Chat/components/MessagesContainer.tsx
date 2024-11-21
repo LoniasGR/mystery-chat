@@ -1,6 +1,7 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { useMessages } from "@/hooks/messages";
+import { isIos } from "@/lib/devices";
 import { useIntersectionObserver } from "@/hooks/misc";
 import Loader from "@/components/ui/loader";
 import { useUsername } from "@/hooks/auth";
@@ -122,12 +123,6 @@ function useScrollOnNewMessage(messages: MessageType[]) {
   const scrollToBottom = useCallback(() => {
     if (ref.current) {
       ref.current.scrollTop = ref.current.scrollHeight;
-
-      requestAnimationFrame(() => {
-        if (ref.current && ref.current.scrollTop !== ref.current.scrollHeight) {
-          ref.current.scrollTop = ref.current.scrollHeight;
-        }
-      });
     }
   }, []);
 
@@ -170,14 +165,14 @@ function useScrollOnNewMessage(messages: MessageType[]) {
       const newScrollTop = ref.current.scrollTop + scrollHeightDiff;
 
       if (ref.current.scrollTop < scrollHeightDiff) {
-        ref.current.scrollTop = newScrollTop;
-      }
-
-      requestAnimationFrame(() => {
-        if (ref.current && ref.current.scrollTop < scrollHeightDiff) {
+        if (isIos) {
+          ref.current.style.overflow = "hidden";
+          ref.current.scrollTop = newScrollTop;
+          ref.current.style.overflow = "auto";
+        } else {
           ref.current.scrollTop = newScrollTop;
         }
-      });
+      }
     }
 
     previousFirstMessageId.current = firstMessage._id;
