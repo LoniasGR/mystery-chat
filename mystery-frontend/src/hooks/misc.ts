@@ -1,15 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useIntersectionObserver<T extends Element = Element>(
   callback: () => void
 ) {
   const ref = useRef<T | null>(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+
+  useEffect(() => {
+    if (isIntersecting) {
+      callback();
+    }
+  }, [isIntersecting, callback]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        callback();
-      }
+      setIsIntersecting(entries[0].isIntersecting);
     });
 
     if (ref.current) {
@@ -17,7 +22,7 @@ export function useIntersectionObserver<T extends Element = Element>(
     }
 
     return () => observer.disconnect();
-  }, [callback]);
+  }, [setIsIntersecting]);
 
   return ref;
 }
