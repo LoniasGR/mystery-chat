@@ -20,7 +20,7 @@ export function useMutation<TData, TVariables = unknown, TError = Error>({
       try {
         const result = await mutationFn(variables);
         setError(null);
-        onSuccess?.(result, variables);
+        await onSuccess?.(result, variables);
         return result;
       } catch (err) {
         const error = err as TError;
@@ -43,7 +43,7 @@ export function useMutation<TData, TVariables = unknown, TError = Error>({
 
 type UseMutationOptions<TData, TVariables, TError> = {
   mutationFn: (variables: TVariables) => Promise<TData>;
-  onSuccess?: (data: TData, variables: TVariables) => void;
+  onSuccess?: (data: TData, variables: TVariables) => void | Promise<void>;
   onError?: (error: TError, variables: TVariables) => void;
 };
 
