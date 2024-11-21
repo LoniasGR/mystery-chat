@@ -31,6 +31,11 @@ function MessagesContainer() {
         className="p-4 flex flex-col gap-4 overflow-auto h-full overscroll-contain"
         ref={chatContainerCallbackRef}
         onScroll={onContainerScroll}
+        style={{
+          willChange: "scroll-position",
+          position: "relative",
+          contain: "layout",
+        }}
       >
         <MessageFetcher
           isFetching={isFetching}

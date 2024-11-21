@@ -27,7 +27,7 @@ export function useIntersectionObserver<T extends Element = Element>(
     }
 
     return () => observer.disconnect();
-  }, [callback]);
+  }, [setIsIntersecting]);
 
   return ref;
 }
