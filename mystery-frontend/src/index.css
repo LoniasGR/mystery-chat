@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Barlow', sans-serif;
+  font-family: "Barlow", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -20,6 +20,10 @@ body {
 
 #root {
   height: 100dvh;
+}
+
+* {
+  overscroll-behavior: none;
 }
 
 /* Option A */

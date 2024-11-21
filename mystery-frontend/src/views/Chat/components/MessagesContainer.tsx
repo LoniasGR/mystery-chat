@@ -27,7 +27,7 @@ function MessagesContainer() {
   return (
     <div className="flex-1 overflow-hidden relative flex flex-col">
       <div
-        className="p-4 flex flex-col gap-4 overflow-auto h-full transform-gpu"
+        className="p-4 flex flex-col gap-4 overflow-auto h-full overscroll-contain"
         ref={chatContainerCallbackRef}
         onScroll={onContainerScroll}
       >
@@ -68,7 +68,7 @@ const MessageFetcher: React.FC<
     );
   }
 
-  return <Loader ref={ref} isAnimating={isFetching} className="min-h-6" />;
+  return <Loader ref={ref} isAnimating className="min-h-6" />;
 };
 
 function MessagesContainerSkeleton() {
@@ -117,6 +117,12 @@ function useScrollOnNewMessage(messages: MessageType[]) {
   const scrollToBottom = useCallback(() => {
     if (ref.current) {
       ref.current.scrollTop = ref.current.scrollHeight;
+
+      requestAnimationFrame(() => {
+        if (ref.current && ref.current.scrollTop !== ref.current.scrollHeight) {
+          ref.current.scrollTop = ref.current.scrollHeight;
+        }
+      });
     }
   }, []);
 
@@ -156,9 +162,17 @@ function useScrollOnNewMessage(messages: MessageType[]) {
       const scrollHeightDiff =
         ref.current.scrollHeight - containerScrollHeight.current;
 
+      const newScrollTop = ref.current.scrollTop + scrollHeightDiff;
+
       if (ref.current.scrollTop < scrollHeightDiff) {
-        ref.current.scrollTop += scrollHeightDiff;
+        ref.current.scrollTop = newScrollTop;
       }
+
+      requestAnimationFrame(() => {
+        if (ref.current && ref.current.scrollTop < scrollHeightDiff) {
+          ref.current.scrollTop = newScrollTop;
+        }
+      });
     }
 
     previousFirstMessageId.current = firstMessage._id;
