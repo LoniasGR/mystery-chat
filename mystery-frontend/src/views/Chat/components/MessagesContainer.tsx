@@ -31,8 +31,7 @@ function MessagesContainer() {
         ref={chatContainerCallbackRef}
         onScroll={onContainerScroll}
         style={{
-          transform: "translateZ(0)",
-          willChange: "transform",
+          willChange: "scroll-position",
           position: "relative",
           contain: "layout",
         }}
