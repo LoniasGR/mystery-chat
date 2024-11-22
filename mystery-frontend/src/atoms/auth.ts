@@ -11,3 +11,8 @@ export const usernameAtom = atomWithStorage<string | null>(
 );
 
 export const isLoggedInAtom = atom((get) => get(usernameAtom) !== null);
+
+export const resetUsernameAtom = atom(null, (_get, set) => {
+  set(usernameAtom, null);
+  localStorage.removeItem(LOCAL_STORAGE_USERNAME_KEY);
+});

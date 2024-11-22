@@ -1,10 +1,13 @@
+import socket from "@/lib/socket";
 import {
   type InternalAxiosRequestConfig,
   AxiosError,
   isAxiosError,
 } from "axios";
+import { toast } from "@/hooks/toast";
+import { formatError } from "@/lib/errors";
 import client from "./client";
-import socket from "@/lib/socket";
+import { logout } from "./auth";
 
 let isRefreshing = false;
 let retryQueue: {
@@ -70,19 +73,68 @@ client.interceptors.response.use(
   }
 );
 
-// TODO: Peak error handling here, a little bit of thought is needed on how to handle this
-socket.on("connect_error", async (error) => {
-  // Typescript does not agree with me and I'm in no mood to play with it.
-  // docs: https://socket.io/docs/v4/troubleshooting-connection-issues/#troubleshooting-steps
-  console.log(JSON.stringify(error));
-  // if(error.description === 403) {
-  await refreshToken();
-  //}
-  if (socket.active) {
-    // temporary failure, the socket will automatically try to reconnect
-  } else {
-    // the connection was denied by the server
-    // in that case, `socket.connect()` must be manually called in order to reconnect
-    socket.connect();
+// docs: https://socket.io/docs/v4/troubleshooting-connection-issues/#troubleshooting-steps
+export const handleSocketAuthErrors = (onUnauthorized: () => void) => {
+  async function errorHandler(error: Error) {
+    const terminateSocket = () => {
+      logout();
+      socket.close();
+      onUnauthorized();
+    };
+
+    const _error = error as SocketError;
+
+    if (_error.description === 403) {
+      try {
+        await refreshToken();
+
+        if (!socket.active) {
+          socket.connect();
+        }
+      } catch {
+        return terminateSocket();
+      }
+    }
+
+    if (_error.description === 401) {
+      return terminateSocket();
+    }
+
+    toast({
+      title: "An unknown error occurred!",
+      description: formatError(error),
+      duration: 5000,
+    });
+    return terminateSocket();
   }
-});
+
+  socket.on("connect_error", errorHandler);
+  return errorHandler;
+};
+
+export const handleAxiosUnauthorized = (onUnauthorized: () => void) =>
+  client.interceptors.response.use(
+    (res) => res,
+    async (error) => {
+      if (!isAxiosError(error)) {
+        return Promise.reject(error);
+      }
+
+      const response = error.response;
+
+      if (response?.status !== 401) {
+        return Promise.reject(error);
+      }
+
+      logout();
+      onUnauthorized();
+    }
+  );
+
+export const clearAxiosMiddleware = (middlewareId: number) =>
+  client.interceptors.response.eject(middlewareId);
+
+export const clearSocketMiddleware = (handlerRef: (error: Error) => void) =>
+  socket.off("connect_error", handlerRef);
+
+type SocketError = Error & { description?: number };

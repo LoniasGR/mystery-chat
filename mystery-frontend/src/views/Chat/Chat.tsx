@@ -1,3 +1,4 @@
+import { Provider } from "jotai";
 import { Separator } from "@/components/ui/separator";
 
 import ChatTextArea from "./components/ChatTextArea";
@@ -12,9 +13,11 @@ function Chat() {
     <div className="flex flex-col h-full">
       <ChatHeader />
       <Separator />
-      <MessagesContainer />
-      <Separator />
-      <ChatTextArea />
+      <Provider>
+        <MessagesContainer />
+        <Separator />
+        <ChatTextArea />
+      </Provider>
     </div>
   );
 }

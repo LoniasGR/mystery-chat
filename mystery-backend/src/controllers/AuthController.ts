@@ -11,6 +11,7 @@ import {
   handleExpired,
   handleUnauthorized,
   handleUnexpected,
+  handleWrongCredentials,
 } from "@/utils/controllerUtils";
 import { verifyJwt } from "@/utils/jwtUtils";
 import express from "express";
@@ -18,10 +19,10 @@ import express from "express";
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
-  const jwt = req.cookies[secrets.jwtAccessTokenName];
-  const refreshToken = req.cookies[secrets.jwtRefreshTokenName];
+  const jwt = req.cookies[secrets.jwtAccessTokenName] as string;
+  const refreshToken = req.cookies[secrets.jwtRefreshTokenName] as string;
 
-  if (!!jwt || !!refreshToken) {
+  if (!!jwt && !!refreshToken) {
     const verification = await verifyJwt(jwt);
 
     if (verification.status === "success") {
@@ -45,7 +46,7 @@ router.post("/login", async (req, res) => {
     res.status(200).json({ username: body.username });
   } catch (e) {
     if (e instanceof ValidationError) {
-      handleUnauthorized(res, e.message);
+      handleWrongCredentials(res, e.message);
     } else if (e instanceof Error) {
       handleUnexpected(res, e.message);
     } else {
