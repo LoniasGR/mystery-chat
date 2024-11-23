@@ -62,8 +62,8 @@ export default function createSocketRoutes(io: MessageServer) {
       socket.broadcast.emit("typing:stop", username);
     });
 
-    socket.on("disconnect", () => {
-      console.log(`${username} disconnected`);
+    socket.on("disconnect", (reason) => {
+      console.log(`${username} disconnected due to ${reason}`);
       io.emit("user:disconnect", username);
     });
   });
