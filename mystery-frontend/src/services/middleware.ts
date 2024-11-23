@@ -5,7 +5,7 @@ import {
   isAxiosError,
 } from "axios";
 import { toast } from "@/hooks/toast";
-import { formatError } from "@/lib/errors";
+import { formatError, SocketError } from "@/lib/errors";
 import client from "./client";
 import { logout } from "./auth";
 
@@ -102,7 +102,7 @@ export const handleSocketAuthErrors = (onUnauthorized: () => void) => {
 
     toast({
       title: "An unknown error occurred!",
-      description: formatError(error),
+      description: `${formatError(error)}. Please contact the administrators.`,
       duration: 5000,
     });
     return terminateSocket();
@@ -136,5 +136,3 @@ export const clearAxiosMiddleware = (middlewareId: number) =>
 
 export const clearSocketMiddleware = (handlerRef: (error: Error) => void) =>
   socket.off("connect_error", handlerRef);
-
-type SocketError = Error & { description?: number };
