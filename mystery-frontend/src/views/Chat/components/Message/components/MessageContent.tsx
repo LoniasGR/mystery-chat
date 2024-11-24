@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const MessageContent: MessageContentComponent = ({ message, isYou }) => {
   return (
     <div
-      className={`py-2 px-3 rounded-lg ${
+      className={`py-2 px-3 rounded-lg transition-colors duration-300 ${
         isYou
           ? "bg-primary text-primary-foreground self-end"
           : "bg-muted self-start"

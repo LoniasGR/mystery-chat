@@ -24,9 +24,10 @@ export default function createSocketRoutes(io: MessageServer) {
       userDetails,
     };
 
-    socket.on("messages:send", (msg) =>
-      handleMessageReceival(connectionInfo, msg)
-    );
+    socket.on("messages:send", async (msg, callback) => {
+      await handleMessageReceival(connectionInfo, msg);
+      callback?.();
+    });
 
     socket.on(
       "messages:fetch",

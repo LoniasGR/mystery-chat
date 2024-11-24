@@ -4,9 +4,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUsername } from "@/hooks/auth";
 import { MessageMeta, MessageContent } from "./components";
 
-import type { Message as MessageType } from "@/common/types";
+import type { MessageWithStatus } from "@/lib/types";
 
-const Message: MessageComponent = ({ content, user, timestamp }) => {
+const Message: MessageComponent = ({ content, user, timestamp, status }) => {
   const currentUser = useUsername();
   const { _id: userId, avatar } = user;
   const isYou = userId === currentUser;
@@ -19,7 +19,12 @@ const Message: MessageComponent = ({ content, user, timestamp }) => {
     >
       {!isYou && <UserAvatar name={userId} src={avatar} className="h-8 w-8" />}
       <div className="flex flex-col gap-1 w-full">
-        <MessageMeta timestamp={timestamp} name={userId} isYou={isYou} />
+        <MessageMeta
+          timestamp={timestamp}
+          name={userId}
+          isYou={isYou}
+          status={status}
+        />
         <MessageContent message={content} isYou={isYou} />
       </div>
     </div>
@@ -46,7 +51,7 @@ const MessageSkeleton = ({ isYou = false }) => {
   );
 };
 
-interface MessageComponent extends React.FC<MessageType> {
+interface MessageComponent extends React.FC<MessageWithStatus> {
   Skeleton: React.FC<{ isYou?: boolean }>;
 }
 
