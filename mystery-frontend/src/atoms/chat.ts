@@ -1,15 +1,15 @@
 import { atom } from "jotai";
 import { v4 as uuid } from "uuid";
 
-import type { Message } from "@/common/types";
+import type { MessageWithStatus, MessageStatus } from "@/lib/types";
 
-export const messagesAtom = atom<Message[]>([]);
+export const messagesAtom = atom<MessageWithStatus[]>([]);
 export const typingUsersAtom = atom<Set<string>>(new Set<string>());
 
 export const storeNewMessageAtom = atom(
   null,
   (_get, set, content: string, username: string) => {
-    const newMessage: Message = {
+    const newMessage: MessageWithStatus = {
       _id: uuid(),
       timestamp: new Date().toISOString(),
       content,
@@ -20,6 +20,25 @@ export const storeNewMessageAtom = atom(
 
     set(messagesAtom, (prev) => [...prev, newMessage]);
     return newMessage;
+  }
+);
+
+export const updateMessageStatusAtom = atom(
+  null,
+  (_get, set, messageId: string, status: MessageStatus) => {
+    set(messagesAtom, (prev) => {
+      const foundIdx = prev.findLastIndex(
+        (message) => message._id === messageId
+      );
+
+      if (foundIdx === -1) {
+        return prev;
+      }
+
+      const newMessages = [...prev];
+      newMessages[foundIdx] = { ...newMessages[foundIdx], status };
+      return newMessages;
+    });
   }
 );
 

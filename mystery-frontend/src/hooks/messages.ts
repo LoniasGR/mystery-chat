@@ -1,23 +1,46 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSetAtom, useAtom } from "jotai";
 import { v4 as uuid } from "uuid";
-import { messagesAtom, storeNewMessageAtom } from "@/atoms/chat";
+import {
+  messagesAtom,
+  storeNewMessageAtom,
+  updateMessageStatusAtom,
+} from "@/atoms/chat";
 import socket from "@/lib/socket";
 import { formatError } from "@/lib/errors";
 import { toast } from "./toast";
 import { useUsername } from "./auth";
+
 import type { Message, MessageCallbackParams } from "@/common/types";
+
+const FAILED_MESSAGE_TIMEOUT = 10000;
+const PENDING_MESSAGE_TIMEOUT = 1000;
 
 export function useSendMessage() {
   const username = useUsername();
   const storeMessage = useSetAtom(storeNewMessageAtom);
+  const updateMessageStatus = useSetAtom(updateMessageStatusAtom);
 
   return useCallback(
     (message: string) => {
-      const { user, ...newMessage } = storeMessage(message, username);
-      socket.emit("messages:send", newMessage);
+      const { user, status, ...newMessage } = storeMessage(message, username);
+      let hasAnyTimeoutExecuted = false;
+      const noAckPendingTimeout = setTimeout(() => {
+        updateMessageStatus(newMessage._id, "pending");
+        hasAnyTimeoutExecuted = true;
+      }, PENDING_MESSAGE_TIMEOUT);
+      const noAckFailedTimeout = setTimeout(() => {
+        updateMessageStatus(newMessage._id, "failed");
+      }, FAILED_MESSAGE_TIMEOUT);
+      socket.emit("messages:send", newMessage, () => {
+        clearTimeout(noAckPendingTimeout);
+        clearTimeout(noAckFailedTimeout);
+        if (hasAnyTimeoutExecuted) {
+          updateMessageStatus(newMessage._id, "sent");
+        }
+      });
     },
-    [username, storeMessage]
+    [username, storeMessage, updateMessageStatus]
   );
 }
 
