@@ -29,7 +29,7 @@ const MessageContentSkeleton = () => {
     height: `${getRandomSkeletonHeight()}px`,
     width: `${Math.floor(Math.random() * (500 - 100 + 1)) + 100}px`,
   });
-  return <Skeleton className="rounded-lg" style={style.current} />;
+  return <Skeleton className="rounded-lg max-w-full" style={style.current} />;
 };
 
 MessageContent.Skeleton = MessageContentSkeleton;
