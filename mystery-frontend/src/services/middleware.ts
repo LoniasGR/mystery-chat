@@ -101,6 +101,7 @@ export const handleSocketAuthErrors = (onUnauthorized: () => void) => {
         if (!socket.active) {
           socket.connect();
         }
+        return;
       } catch (error: unknown) {
         uknownErrorToast(error);
         return terminateSocket();
