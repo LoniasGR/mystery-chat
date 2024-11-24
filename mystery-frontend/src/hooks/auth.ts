@@ -1,10 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
-import { getDefaultStore, useAtomValue, useSetAtom } from "jotai";
 import { isAxiosError } from "axios";
+import { getDefaultStore, useAtomValue, useSetAtom } from "jotai";
+import { useCallback } from "react";
 
 import { isLoggedInAtom, usernameAtom } from "@/atoms/auth";
-import { login, logout } from "@/services/auth";
+import { useMutation } from "@/hooks/mutations";
 import { formatError } from "@/lib/errors";
+import { login, logout } from "@/services/auth";
 import { useToast } from "./toast";
 
 export function useLoginMutation(beforeOnSuccess?: () => void | Promise<void>) {
@@ -41,7 +42,7 @@ export function useLogoutMutation() {
   const setUsername = useSetAtom(usernameAtom, { store: getDefaultStore() });
   return useMutation({
     mutationFn: logout,
-    onSuccess: () => setUsername(null),
+    onSuccess: useCallback(() => setUsername(null), [setUsername]),
   });
 }
 
