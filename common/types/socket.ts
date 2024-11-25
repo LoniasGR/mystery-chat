@@ -11,7 +11,7 @@ export type ServerToClientEvents = {
 export type ClientToServerEvents = {
   "typing:start": () => void;
   "typing:stop": () => void;
-  "messages:send": (message: BareMessage) => void;
+  "messages:send": (message: BareMessage, callback: () => void) => void;
   "messages:fetch": (
     oldestMessage: string | null,
     chatId: string,

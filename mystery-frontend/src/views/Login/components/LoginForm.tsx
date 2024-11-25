@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  memo,
-} from "react";
+import React, { useRef, useCallback, useState, forwardRef, memo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,19 +16,10 @@ import gatsbyVideo from "@/assets/gatsby.mp4";
 import gatsbyPoster from "@/assets/gatsbyPoster.webp";
 
 const LoginTitle = memo(
-  forwardRef(function LoginTitle(_props, ref) {
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-    const [entered, setEntered] = useState(false);
-
-    useImperativeHandle(ref, () => ({
-      enter: async () => {
-        setEntered(true);
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        await videoRef.current?.play();
-        await new Promise((resolve) => setTimeout(resolve, 2200));
-      },
-    }));
-
+  forwardRef<HTMLVideoElement, { entered: boolean }>(function LoginTitle(
+    { entered },
+    ref
+  ) {
     return (
       <div className="flex justify-between items-start gap-2">
         <div>
@@ -58,7 +43,7 @@ const LoginTitle = memo(
         </div>
         <video
           src={gatsbyVideo}
-          ref={videoRef}
+          ref={ref}
           playsInline
           muted
           preload="auto"
@@ -72,12 +57,17 @@ const LoginTitle = memo(
 );
 
 export function LoginForm() {
-  const titleRef = useRef<MysteryEntranceHandle>();
-  const {
-    mutate: login,
-    isPending,
-    error,
-  } = useLoginMutation(titleRef.current?.enter);
+  const gatsbyRef = useRef<HTMLVideoElement | null>(null);
+  const [entered, setEntered] = useState(false);
+
+  const enter = useCallback(async () => {
+    setEntered(true);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    await gatsbyRef.current?.play();
+    await new Promise((resolve) => setTimeout(resolve, 2200));
+  }, [setEntered]);
+
+  const { mutate: login, isPending, error } = useLoginMutation(enter);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,7 +84,7 @@ export function LoginForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <LoginTitle ref={titleRef} />
+        <LoginTitle ref={gatsbyRef} entered={entered} />
       </CardHeader>
       <CardContent>
         <form className="grid gap-4" onSubmit={handleSubmit}>
@@ -127,7 +117,3 @@ function ErrorMessage({ error }: { error: Error | null }) {
     </p>
   );
 }
-
-type MysteryEntranceHandle = {
-  enter: () => Promise<void>;
-};

@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import {
   SunIcon,
   MoonIcon,
@@ -72,8 +71,6 @@ function DarkModeToggle() {
 function LogoutButton() {
   const { mutate: logout, isPending } = useLogoutMutation();
 
-  const handleLogout = useCallback(() => logout(), [logout]);
-
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -81,7 +78,7 @@ function LogoutButton() {
           variant="ghost"
           size="icon"
           aria-label="Logout"
-          onClick={handleLogout}
+          onClick={logout}
           isLoading={isPending}
         >
           <ExitIcon className="h-4 w-4" />

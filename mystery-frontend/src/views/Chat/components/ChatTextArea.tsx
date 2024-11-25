@@ -38,7 +38,7 @@ function ChatTextArea() {
       <div className="relative">
         <Textarea
           placeholder="Type your message here."
-          className="bg-input resize-none pr-10 sm:pr-[42px]"
+          className="bg-input resize-none pr-10 sm:pr-[42px] min-h-[42px]"
           value={message}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
