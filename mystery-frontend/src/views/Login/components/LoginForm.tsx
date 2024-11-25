@@ -112,7 +112,7 @@ function ErrorMessage({ error }: { error: Error | null }) {
   }
 
   return (
-    <p className="text-[0.8rem] font-medium text-destructive">
+    <p className="text-[0.8rem] font-medium text-destructive brightness-200">
       {formatError(error)}
     </p>
   );
