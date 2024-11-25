@@ -35,15 +35,13 @@ export function ThemeProvider({
 
     root.classList.remove("light", "dark");
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
-    }
+    const themeMetaTag = document.head.querySelector(
+      'meta[name="theme-color"]'
+    );
+    themeMetaTag?.setAttribute(
+      "content",
+      theme === "dark" ? "#191513" : "#f5f5f5"
+    );
 
     root.classList.add(theme);
   }, [theme]);
