@@ -89,9 +89,6 @@ export function useMessages({ manualFetch = false } = {}) {
       setMessages((prev) => [...prev, message]);
       if (notificationVariant === "sound") {
         Notifications.playSound();
-        Notifications.vibrate();
-      } else if (notificationVariant === "vibrate") {
-        Notifications.vibrate();
       }
     }
 

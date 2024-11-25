@@ -12,7 +12,7 @@ import { notificationVariantAtom } from "@/atoms/notifications";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { isIos, isMobile } from "@/lib/devices";
+import { isMobile } from "@/lib/devices";
 import {
   Tooltip,
   TooltipContent,
@@ -94,11 +94,14 @@ function LogoutButton() {
 function AudioToggle() {
   const [variant, setVariant] = useAtom(notificationVariantAtom);
 
+  if (isMobile) {
+    return null;
+  }
+
   const Icon = notificationVariantIcon[variant];
   const handleAudioToggle = () =>
     setVariant((prev) => {
       if (prev === "none") return "sound";
-      if (prev === "sound" && !isIos && isMobile) return "vibrate";
       return "none";
     });
   const label = notificationVariantLabel[variant];
