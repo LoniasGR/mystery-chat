@@ -146,6 +146,10 @@ export const handleAxiosUnauthorized = (onUnauthorized: () => void) =>
         return Promise.reject(error);
       }
 
+      if (error.response?.config.url?.includes("login")) {
+        return Promise.reject(error);
+      }
+
       logout();
       onUnauthorized();
     }
