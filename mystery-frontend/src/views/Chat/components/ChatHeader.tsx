@@ -1,8 +1,18 @@
-import { SunIcon, MoonIcon, ExitIcon } from "@radix-ui/react-icons";
+import {
+  SunIcon,
+  MoonIcon,
+  ExitIcon,
+  SpeakerLoudIcon,
+  SpeakerOffIcon,
+  MobileIcon,
+} from "@radix-ui/react-icons";
+import { useAtom } from "jotai";
 
+import { notificationVariantAtom } from "@/atoms/notifications";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { isIos, isMobile } from "@/lib/devices";
 import {
   Tooltip,
   TooltipContent,
@@ -24,6 +34,7 @@ function ChatHeader() {
       </h1>
       <div className="ml-auto flex gap-1">
         <TooltipProvider>
+          <AudioToggle />
           <DarkModeToggle />
           <LogoutButton />
         </TooltipProvider>
@@ -35,7 +46,7 @@ function ChatHeader() {
 function DarkModeToggle() {
   const { theme, setTheme } = useTheme();
 
-  const Icon = theme !== "dark" ? MoonIcon : SunIcon;
+  const Icon = theme === "dark" ? MoonIcon : SunIcon;
   const handleThemeChange = () => setTheme(theme === "dark" ? "light" : "dark");
 
   return (
@@ -80,4 +91,46 @@ function LogoutButton() {
   );
 }
 
+function AudioToggle() {
+  const [variant, setVariant] = useAtom(notificationVariantAtom);
+
+  const Icon = notificationVariantIcon[variant];
+  const handleAudioToggle = () =>
+    setVariant((prev) => {
+      if (prev === "none") return "sound";
+      if (prev === "sound" && !isIos && isMobile) return "vibrate";
+      return "none";
+    });
+  const label = notificationVariantLabel[variant];
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={label}
+          onClick={handleAudioToggle}
+        >
+          <Icon className="h-4 w-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{label}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+const notificationVariantIcon = {
+  none: SpeakerOffIcon,
+  sound: SpeakerLoudIcon,
+  vibrate: MobileIcon,
+};
+
+const notificationVariantLabel = {
+  none: "Sound off",
+  sound: "Sound on",
+  vibrate: "Vibrate",
+};
 export default ChatHeader;
