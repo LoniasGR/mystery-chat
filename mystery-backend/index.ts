@@ -25,6 +25,7 @@ const server = createServer(app);
 const io: MessageServer = new Server(server, {
   serveClient: false,
   cors: corsConfig,
+  connectionStateRecovery: {},
 });
 
 // Set up express middleware

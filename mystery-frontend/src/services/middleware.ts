@@ -83,7 +83,7 @@ export const handleSocketAuthErrors = (onUnauthorized: () => void) => {
     };
 
     const _error = error as SocketError;
-    const uknownErrorToast = (error: unknown) => {
+    const unknownErrorToast = (error: unknown) => {
       toast({
         title: "An unknown error occurred!",
         description: `
@@ -94,30 +94,38 @@ export const handleSocketAuthErrors = (onUnauthorized: () => void) => {
       });
     };
 
-    if (_error.description === 403) {
-      try {
-        await refreshToken();
+    switch (_error.description) {
+      case 403:
+        try {
+          await refreshToken();
 
+          if (!socket.active) {
+            socket.connect();
+          }
+          return;
+        } catch (error: unknown) {
+          unknownErrorToast(error);
+          return terminateSocket();
+        }
+
+      case 401:
+        toast({
+          title: "Unauthorized Access detected!",
+          description: "You were supposed to destroy them, not join them!",
+          duration: 5000,
+        });
+        return terminateSocket();
+
+      case 0:
         if (!socket.active) {
           socket.connect();
         }
         return;
-      } catch (error: unknown) {
-        uknownErrorToast(error);
-        return terminateSocket();
-      }
-    }
 
-    if (_error.description === 401) {
-      toast({
-        title: "Unauthorized Access detected!",
-        description: "You were supposed to destroy them, not join them!",
-        duration: 5000,
-      });
-      return terminateSocket();
+      default:
+        unknownErrorToast(error);
+        return terminateSocket();
     }
-    uknownErrorToast(error);
-    return terminateSocket();
   }
 
   socket.on("connect_error", errorHandler);
