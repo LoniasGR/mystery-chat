@@ -1,0 +1,64 @@
+name: Create and publish a Docker image
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Log in to container registry
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        uses: docker/metadata-action@v5.6.1
+        id: meta
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6.10.0
+        id: push
+        with:
+          context: .
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=https://mysterious.chat
+            FRONTEND_DIST_PATH=../mystery-frontend/dist
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      # SSH into EC2 and deploy
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker network create mystery || true
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            docker run -d \
+              --name app \
+              --network mystery\
+              -e JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} \
+              -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e MONGO_DATABASE=mystery \
+              -e APP_PORT=8080 \
+              ${{ steps.meta.outputs.tags }}
+            cd /opt/deployment
+            docker-compose restart nginx

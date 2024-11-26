@@ -39,5 +39,28 @@ services:
     depends_on:
       - mongo
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/
+      - certbot_data:/var/www/certbot/:ro
+      - certificates:/etc/nginx/ssl/:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - certbot_data:/var/www/certbot/:rw
+      - certificates:/etc/letsencrypt/:rw
+
 volumes:
   mongo_data:
+  certbot_data:
+  certificates:
+
+networks:
+  default:
+    name: mystery
