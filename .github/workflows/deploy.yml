@@ -49,6 +49,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            docker stop app || true
+            docker rm app || true
             docker network create mystery || true
             docker pull ${{ steps.meta.outputs.tags }}
             docker run -d \
@@ -56,7 +58,7 @@ jobs:
               --network mystery \
               -e JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} \
               -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
-              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e MONGO_CONNECTION_URL=${{ secrets.DATABASE_URL }} \
               -e MONGO_DATABASE=mystery \
               -e APP_PORT=8080 \
               ${{ steps.meta.outputs.tags }}
