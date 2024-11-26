@@ -58,7 +58,7 @@ jobs:
               --network mystery \
               -e JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} \
               -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
-              -e MONGO_CONNECTION_URL=${{ secrets.DATABASE_URL }} \
+              -e MONGO_CONNECTION_URL=${{ secrets.MONGO_CONNECTION_URL }} \
               -e MONGO_DATABASE=mystery \
               -e APP_PORT=8080 \
               ${{ steps.meta.outputs.tags }}
