@@ -50,10 +50,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker network create mystery || true
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            docker pull ${{ steps.meta.outputs.tags }}
             docker run -d \
               --name app \
-              --network mystery\
+              --network mystery \
               -e JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} \
               -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
