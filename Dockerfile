@@ -1,9 +1,8 @@
 
-ARG VITE_API_BASE_URL
-ARG FRONTEND_DIST_PATH
 
 FROM oven/bun:alpine AS frontend-builder
 
+ARG VITE_API_BASE_URL
 
 WORKDIR /usr/src/app/frontend
 
@@ -18,6 +17,8 @@ COPY ./mystery-frontend/ ./
 RUN bun run build
 
 FROM oven/bun:alpine AS production
+ARG FRONTEND_DIST_PATH
+ARG VITE_API_BASE_URL
 
 ENV FRONTEND_DIST_PATH=${FRONTEND_DIST_PATH}
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
