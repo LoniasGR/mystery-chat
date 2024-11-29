@@ -76,7 +76,7 @@ export function LoginForm() {
     const password = form.elements.namedItem("password") as HTMLInputElement;
 
     return login({
-      username: nickname.value,
+      username: nickname.value.trim(),
       password: password.value,
     });
   };
