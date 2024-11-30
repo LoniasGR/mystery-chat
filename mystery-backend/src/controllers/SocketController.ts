@@ -23,6 +23,7 @@ export default function createSocketRoutes(io: MessageServer) {
       connectedUsername: username,
       userDetails,
     };
+    console.log(`${username} connected...`);
 
     socket.on("messages:send", async (msg, callback) => {
       await handleMessageReceival(connectionInfo, msg);
