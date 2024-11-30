@@ -57,7 +57,7 @@ jobs:
             docker run -d \
               --name app \
               --network mystery \
-              -- restart always \
+              --restart always \
               -e JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} \
               -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
               -e MONGO_CONNECTION_URL=${{ secrets.MONGO_CONNECTION_URL }} \
