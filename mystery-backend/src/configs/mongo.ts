@@ -1,5 +1,5 @@
 import { envOrDefault } from "@/configs/env";
-import { MongoClient } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 const username = envOrDefault<string>("MONGO_USERNAME", "");
 const password = envOrDefault<string>("MONGO_PASSWORD", "");
@@ -11,7 +11,13 @@ const connectionString = envOrDefault<string>(
   `mongodb://${username}:${password}@${host}:${port}`
 );
 
-const client = new MongoClient(connectionString);
+const client = new MongoClient(connectionString, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
 console.log(`Connecting to MongoDB: ${connectionString}`);
 const db = client.db(dbName as string);
